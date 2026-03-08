@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RemoteView</title>
+    <meta name="description" content="Display student work and run a live visualiser from your phone or tablet. Photograph student work, project, annotate and discuss. Free, no login, no data stored.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ═══ MAIN CONTAINER ═══ -->
+<div id="show_mB4x_app">
+    <div class="show_mB4x_toolbar">
+        <div class="show_mB4x_title">RemoteView</div>
+        <div class="show_mB4x_toolbar_actions">
+            <div class="show_mB4x_room_badge" id="show_mB4x_roomBadge" title="Click to show room code">
+                <span class="show_mB4x_status_dot" id="show_mB4x_statusDot"></span>
+                <span id="show_mB4x_roomCodeSmall">&#8212;&#8212;</span>
+            </div>
+            <span class="show_mB4x_photo_count" id="show_mB4x_photoCount">0 / 8 photos</span>
+            <div class="show_mB4x_page_pills" id="show_mB4x_pagePills"></div>
+            <div class="show_mB4x_pill_sep"></div>
+            <button class="show_mB4x_pill show_mB4x_pill_action" id="show_mB4x_loadPhotoBtn" title="Load photo from this device">&#128194; Load Photo</button>
+            <button class="show_mB4x_pill show_mB4x_pill_action" id="show_mB4x_saveBtn" title="Save board as image">&#128190; Save</button>
+            <button class="show_mB4x_pill show_mB4x_pill_hide_all" id="show_mB4x_hideAllBtn" title="Hide or show all photos (H)">&#128584; Hide All</button>
+            <button class="show_mB4x_pill show_mB4x_pill_reset" id="show_mB4x_clearAllBtn" title="Clear everything">&#8634; Clear All</button>
+            <div class="show_mB4x_pill_sep"></div>
+            <button class="show_mB4x_pill show_mB4x_pill_fs" id="show_mB4x_fullscreenBtn" title="Full screen (F)">&#9974; <span class="show_mB4x_pill_fs_prompt">Full Screen</span></button>
+            <button class="show_mB4x_fs_exit" id="show_mB4x_fsExitBtn" title="Exit full screen (Esc)">&#10005;</button>
+            <button class="show_mB4x_pill show_mB4x_pill_help" id="show_mB4x_helpBtn" title="How to use this board">&#9432;</button>
+        </div>
+    </div>
+    <div class="show_mB4x_main">
+        <div class="show_mB4x_canvas_area" id="show_mB4x_canvasArea">
+            <div class="show_mB4x_welcome" id="show_mB4x_welcome">
+                <div class="show_mB4x_welcome_header">Connect your phone or tablet to get started</div>
+                <div class="show_mB4x_welcome_paths">
+                    <div class="show_mB4x_welcome_path show_mB4x_path_qr">
+                        <div class="show_mB4x_path_badge">Quickest</div>
+                        <div class="show_mB4x_welcome_qr" id="show_mB4x_qr">
+                            <div class="show_mB4x_qr_label">Scan to connect instantly</div>
+                        </div>
+                        <div class="show_mB4x_path_desc">Point your phone or tablet&#8217;s camera at the QR code &#8212; it opens the page and connects automatically</div>
+                    </div>
+                    <div class="show_mB4x_welcome_divider">
+                        <span>or</span>
+                    </div>
+                    <div class="show_mB4x_welcome_path show_mB4x_path_manual">
+                        <div class="show_mB4x_path_step"><span class="show_mB4x_path_num">1</span> Visit the website</div>
+                        <div class="show_mB4x_welcome_url" id="show_mB4x_pageUrl"></div>
+                        <div class="show_mB4x_path_step"><span class="show_mB4x_path_num">2</span> Enter this code</div>
+                        <div class="show_mB4x_welcome_code" id="show_mB4x_roomCodeBig">&#8212;&#8212;</div>
+                    </div>
+                </div>
+                <div class="show_mB4x_waiting" id="show_mB4x_waiting">
+                    <span class="show_mB4x_status_dot show_mB4x_dot_on"></span> Connected &#8212; waiting for photos<span class="show_mB4x_waiting_dots"></span>
+                </div>
+                <div class="show_mB4x_welcome_footer">Or just start drawing on the board &#183; <em>Images never stored on any server</em></div>
+            </div>
+            <div class="show_mB4x_photo_layer" id="show_mB4x_photoLayer"></div>
+            <div class="show_mB4x_stamp_layer" id="show_mB4x_stampLayer"></div>
+            <canvas class="show_mB4x_draw_canvas" id="show_mB4x_drawCanvas"></canvas>
+            <div class="show_mB4x_text_layer" id="show_mB4x_textLayer"></div>
+            <div class="show_mB4x_spotlight_overlay" id="show_mB4x_spotlightOverlay"></div>
+            <div class="show_mB4x_lock_banner" id="show_mB4x_lockBanner">&#128274; Board locked</div>
+            <div class="show_mB4x_vis_display_wrap show_mB4x_hidden" id="show_mB4x_visDisplayWrap">
+                <img class="show_mB4x_vis_display_img" id="show_mB4x_visDisplayImg" alt="">
+            </div>
+            <div class="show_mB4x_vis_display_bar show_mB4x_hidden" id="show_mB4x_visDisplayBar">
+                <span class="show_mB4x_vis_live_dot" id="show_mB4x_visLiveDot"></span>
+                <span class="show_mB4x_vis_bar_label" id="show_mB4x_visBarLabel">LIVE</span>
+                <button class="show_mB4x_vis_bar_btn" id="show_mB4x_visDisplayFreezeBtn" title="Freeze / unfreeze (pause to annotate)">&#9208; Freeze</button>
+                <button class="show_mB4x_vis_bar_btn show_mB4x_vis_bar_capture show_mB4x_hidden" id="show_mB4x_visDisplayCaptureBtn" title="Save this frame as a photo on the board">&#128247; Capture</button>
+                <button class="show_mB4x_vis_bar_btn" id="show_mB4x_visDisplayRotateBtn" title="Rotate 90°">&#8635; Rotate</button>
+                <button class="show_mB4x_vis_bar_btn show_mB4x_vis_bar_end" id="show_mB4x_visDisplayEndBtn" title="End visualiser">&#9209; End</button>
+            </div>
+            <div class="show_mB4x_toast" id="show_mB4x_toast"></div>
+        </div>
+        <div class="show_mB4x_tools" id="show_mB4x_tools">
+            <div class="show_mB4x_tools_row">
+                <span class="show_mB4x_tool_label">Pen</span>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-tool="pen" data-color="#2c3e50" title="Black pen (Q)"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#2b6cb0" title="Blue pen (W)"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#e53e3e" title="Red pen (R)"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#38a169" title="Green pen (G)"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
+                <div class="show_mB4x_tool_sep"></div>
+                <span class="show_mB4x_tool_label">Size</span>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-width="3" title="Thin"><span class="show_mB4x_pen_dot" style="background:#718096;width:6px;height:6px"></span></button>
+                <button class="show_mB4x_tool_btn" data-width="6" title="Medium"><span class="show_mB4x_pen_dot" style="background:#718096;width:10px;height:10px"></span></button>
+                <button class="show_mB4x_tool_btn" data-width="12" title="Thick"><span class="show_mB4x_pen_dot" style="background:#718096"></span></button>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn" data-tool="highlighter" title="Highlighter"><span class="show_mB4x_pen_dot" style="background:rgba(255,230,0,0.7)"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="arrow" title="Arrow">&#10140;</button>
+                <button class="show_mB4x_tool_btn" data-tool="eraser" title="Eraser (E)">&#129531;</button>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_undoBtn" title="Undo (Ctrl+Z)">&#8617;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_redoBtn" title="Redo (Ctrl+Shift+Z)">&#8618;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_clearDrawBtn" title="Clear drawings only (Shift+C)">Clear Ink</button>
+            </div>
+            <div class="show_mB4x_tools_row">
+                <button class="show_mB4x_tool_btn" data-tool="text" title="Text label" style="font-weight:800">T</button>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn show_mB4x_stamp_toggle" id="show_mB4x_stampToggle" title="Stamps">&#10003;&#10007;</button>
+                <div class="show_mB4x_stamp_panel" id="show_mB4x_stampPanel">
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#10003;" title="Tick" style="color:#38a169;font-weight:800">&#10003;</button>
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#10007;" title="Cross" style="color:#e53e3e;font-weight:800">&#10007;</button>
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="?" title="Question" style="color:#2b6cb0;font-weight:800;font-size:1.1em">?</button>
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#9733;" title="Star" style="color:#d69e2e">&#9733;</button>
+                </div>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn show_mB4x_spotlight_btn" id="show_mB4x_spotlightBtn" title="Spotlight &#8212; toggle (S)">&#128294;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_spotlight_size" id="show_mB4x_spotlightMinus" title="Smaller spotlight">&#8722;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_spotlight_size" id="show_mB4x_spotlightPlus" title="Larger spotlight">+</button>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn show_mB4x_lock_btn" id="show_mB4x_lockBtn" title="Lock board (L)">&#128274;</button>
+                <button class="show_mB4x_shortcut_hint" id="show_mB4x_shortcutHelpBtn" title="Keyboard shortcuts (?)">?</button>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn show_mB4x_more_toggle" id="show_mB4x_moreToggle" title="Board backgrounds"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg></button>
+                <div class="show_mB4x_more_panel" id="show_mB4x_morePanel">
+                    <div class="show_mB4x_tool_sep"></div>
+                    <span class="show_mB4x_tool_label">Board</span>
+                    <button class="show_mB4x_bg_pill show_mB4x_tool_active" data-bg="white" title="Plain white"></button>
+                    <button class="show_mB4x_bg_pill" data-bg="grid" title="Squared grid"><span class="show_mB4x_bg_grid_icon"></span></button>
+                    <button class="show_mB4x_bg_pill" data-bg="dots" title="Dotted grid"><span class="show_mB4x_bg_dots_icon"></span></button>
+                    <button class="show_mB4x_bg_pill" data-bg="lined" title="Lined"><span class="show_mB4x_bg_lined_icon"></span></button>
+                </div>
+            </div>
+        </div>
+        <div class="show_mB4x_phone_panel" id="show_mB4x_phonePanel">
+            <div class="show_mB4x_phone_connect" id="show_mB4x_phoneConnect">
+                <div class="show_mB4x_phone_label">Connect to a display</div>
+                <div class="show_mB4x_phone_sublabel">Enter the code shown on the big screen</div>
+                <div><input type="text" class="show_mB4x_code_input" id="show_mB4x_codeInput" maxlength="6" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="Code" autocomplete="off" style="text-transform:uppercase"></div>
+                <button class="show_mB4x_connect_btn" id="show_mB4x_connectBtn">Connect</button>
+                <div class="show_mB4x_phone_error" id="show_mB4x_phoneError"></div>
+                <div class="show_mB4x_phone_divider">&#8212; or &#8212;</div>
+                <button class="show_mB4x_phone_display_btn" id="show_mB4x_switchToDisplay">&#128421;&#65039; Use this device as the display</button>
+                <div class="show_mB4x_phone_display_hint">Choose this if you only have one device, or are sharing this screen via AirPlay / casting</div>
+            </div>
+            <div class="show_mB4x_phone_connected" id="show_mB4x_phoneConnected">
+                <div class="show_mB4x_phone_status show_mB4x_status_ok" id="show_mB4x_phoneStatus"><span class="show_mB4x_status_dot show_mB4x_dot_on"></span> Connected</div>
+                <div class="show_mB4x_phone_page_bar show_mB4x_hidden" id="show_mB4x_phonePageBar">
+                    <button class="show_mB4x_phone_page_btn" id="show_mB4x_phonePagePrev">&#8249;</button>
+                    <span class="show_mB4x_phone_page_label" id="show_mB4x_phonePageLabel">Page 1 / 1</span>
+                    <button class="show_mB4x_phone_page_btn" id="show_mB4x_phonePageNext">&#8250;</button>
+                    <button class="show_mB4x_phone_page_btn show_mB4x_phone_page_add" id="show_mB4x_phonePageAdd">+</button>
+                </div>
+                <div class="show_mB4x_phone_tabs" id="show_mB4x_phoneTabs">
+                    <button class="show_mB4x_phone_tab show_mB4x_phone_tab_active" data-tab="camera">&#128247; Camera</button>
+                    <button class="show_mB4x_phone_tab" data-tab="visualiser">&#128249; Visualiser</button>
+                    <button class="show_mB4x_phone_tab" data-tab="annotate">&#9999;&#65039; Annotate</button>
+                </div>
+                <!-- Camera tab -->
+                <div class="show_mB4x_phone_tab_panel show_mB4x_visible" id="show_mB4x_tabCamera">
+                    <button class="show_mB4x_cam_btn" id="show_mB4x_takePhotoBtn"><span class="show_mB4x_cam_icon">&#128247;</span><div class="show_mB4x_cam_text"><strong>Take Photo</strong><span>Use camera to capture student work</span></div></button>
+                    <button class="show_mB4x_cam_btn" id="show_mB4x_choosePhotoBtn"><span class="show_mB4x_cam_icon">&#128444;&#65039;</span><div class="show_mB4x_cam_text"><strong>Choose Photo</strong><span>Select from photo library</span></div></button>
+                    <input type="file" accept="image/*" capture="environment" class="show_mB4x_cam_input" id="show_mB4x_camCapture">
+                    <input type="file" accept="image/*" class="show_mB4x_cam_input" id="show_mB4x_camLibrary">
+                    <div class="show_mB4x_phone_status show_mB4x_hidden" id="show_mB4x_sendingStatus"><span class="show_mB4x_spinner"></span> Sending photo&#8230;</div>
+                    <div class="show_mB4x_phone_sent" id="show_mB4x_sentThumbs"></div>
+                </div>
+                <!-- Visualiser tab -->
+                <div class="show_mB4x_phone_tab_panel" id="show_mB4x_tabVisualiser">
+                    <div class="show_mB4x_vis_preview_wrap">
+                        <video class="show_mB4x_vis_preview" id="show_mB4x_visPreview" playsinline muted autoplay></video>
+                        <div class="show_mB4x_vis_preview_placeholder" id="show_mB4x_visPlaceholder">
+                            <div>&#128249;</div>
+                            <div>Tap Start to begin live feed</div>
+                        </div>
+                        <div class="show_mB4x_vis_frozen_badge show_mB4x_hidden" id="show_mB4x_visFrozenBadge">&#9208; Frozen</div>
+                    </div>
+                    <div class="show_mB4x_vis_controls">
+                        <button class="show_mB4x_vis_btn show_mB4x_vis_start" id="show_mB4x_visStartBtn">&#9654; Start Live Feed</button>
+                        <button class="show_mB4x_vis_btn show_mB4x_vis_freeze show_mB4x_hidden" id="show_mB4x_visFreezeBtn">&#9208; Freeze</button>
+                        <button class="show_mB4x_vis_btn show_mB4x_vis_capture show_mB4x_hidden" id="show_mB4x_visPhoneCaptureBtn">&#128247; Capture</button>
+                        <button class="show_mB4x_vis_btn show_mB4x_vis_flip show_mB4x_hidden" id="show_mB4x_visFlipBtn">&#128260; Flip</button>
+                        <button class="show_mB4x_vis_btn show_mB4x_vis_rotate show_mB4x_hidden" id="show_mB4x_visPhoneRotateBtn">&#8635; Rotate</button>
+                        <button class="show_mB4x_vis_btn show_mB4x_vis_stop show_mB4x_hidden" id="show_mB4x_visStopBtn">&#9209; Stop</button>
+                    </div>
+                    <div class="show_mB4x_vis_hint">Students see this live on the display &#8212; great for modelling worked examples</div>
+                    <div class="show_mB4x_vis_status show_mB4x_hidden" id="show_mB4x_visStatus"></div>
+                </div>
+                <!-- Annotate tab -->
+                <div class="show_mB4x_phone_tab_panel" id="show_mB4x_tabAnnotate">
+                    <div class="show_mB4x_remote_canvas_wrap">
+                        <canvas class="show_mB4x_remote_canvas" id="show_mB4x_remoteCanvas"></canvas>
+                    </div>
+                    <div class="show_mB4x_remote_tools">
+                        <div class="show_mB4x_remote_tools_row">
+                            <button class="show_mB4x_tool_btn show_mB4x_rtool_active" data-rtool="pen" data-rcolor="#2c3e50"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
+                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#2b6cb0"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
+                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#e53e3e"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
+                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#38a169"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
+                            <div class="show_mB4x_tool_sep"></div>
+                            <button class="show_mB4x_tool_btn" data-rtool="eraser" title="Eraser">&#129531;</button>
+                            <button class="show_mB4x_tool_btn" data-rtool="arrow">&#10140;</button>
+                        </div>
+                        <div class="show_mB4x_remote_tools_row">
+                            <button class="show_mB4x_tool_btn" data-rtool="stamp" data-rstamp="&#10003;" style="color:#38a169;font-weight:800">&#10003;</button>
+                            <button class="show_mB4x_tool_btn" data-rtool="stamp" data-rstamp="&#10007;" style="color:#e53e3e;font-weight:800">&#10007;</button>
+                            <div class="show_mB4x_tool_sep"></div>
+                            <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteUndoBtn">&#8617;</button>
+                            <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteClearBtn">Clear</button>
+                            <div class="show_mB4x_tool_sep"></div>
+                            <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteRefreshBtn" title="Refresh board view">&#128260;</button>
+                        </div>
+                    </div>
+                    <div class="show_mB4x_remote_hint">Draw here &#8212; appears live on the display</div>
+                </div>
+                <button class="show_mB4x_connect_btn" id="show_mB4x_disconnectBtn" style="background:#718096;box-shadow:0 3px 10px rgba(113,128,150,0.3);font-size:0.88em;padding:10px 20px">Disconnect</button>
+            </div>
+        </div>
+    </div>
+    <input type="file" accept="image/*" id="show_mB4x_desktopFileInput" style="display:none" multiple>
+</div>
+
+<script src="js/qrcode.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/drawing.js"></script>
+<script src="js/annotations.js"></script>
+<script src="js/photos.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/connection.js"></script>
+<script src="js/visualiser.js"></script>
+<script src="js/phone.js"></script>
+<script src="js/toolbar.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
