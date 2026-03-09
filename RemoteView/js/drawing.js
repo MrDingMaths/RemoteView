@@ -109,6 +109,13 @@ SAB.drawing.startDrawing = function (e) {
         return;
     }
 
+    if (state.tool === 'eraser') {
+        SAB.toolbar.hideWelcome();
+        state.isDrawing = true;
+        SAB.drawing.eraseStrokeAt(pos);
+        return;
+    }
+
     SAB.toolbar.hideWelcome();
     state.isDrawing = true;
     state.currentStroke = {
@@ -126,6 +133,11 @@ SAB.drawing.continueDrawing = function (e) {
     var pos = SAB.drawing.getPointerPos(e);
     var drawCanvas = SAB.els.drawCanvas;
     var ctx = SAB.els.ctx;
+
+    if (state.tool === 'eraser') {
+        SAB.drawing.eraseStrokeAt(pos);
+        return;
+    }
 
     if (state.tool === 'arrow' && state.lineStart) {
         SAB.drawing.redrawStrokes();
@@ -171,15 +183,9 @@ SAB.drawing.continueDrawing = function (e) {
 
     ctx.save();
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    if (state.currentStroke.tool === 'eraser') {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.strokeStyle = 'rgba(0,0,0,1)';
-        ctx.lineWidth = state.currentStroke.width * 3;
-    } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = state.currentStroke.color;
-        ctx.lineWidth = state.currentStroke.width;
-    }
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = state.currentStroke.color;
+    ctx.lineWidth = state.currentStroke.width;
     if (pts.length >= 2) {
         ctx.beginPath();
         ctx.moveTo(pts[pts.length - 2].x * w, pts[pts.length - 2].y * h);
@@ -193,6 +199,8 @@ SAB.drawing.stopDrawing = function (e) {
     var state = SAB.state;
     if (!state.isDrawing) return;
     state.isDrawing = false;
+
+    if (state.tool === 'eraser') return;
 
     if (state.tool === 'arrow' && state.lineStart) {
         var pos = SAB.drawing.getPointerPos(e);
@@ -216,6 +224,40 @@ SAB.drawing.stopDrawing = function (e) {
         state.redoStack.length = 0;
     }
     state.currentStroke = null;
+};
+
+/* ─── Stroke-based Eraser ─── */
+SAB.drawing.eraseStrokeAt = function (pos) {
+    var state = SAB.state;
+    var w = SAB.els.drawCanvas.width, h = SAB.els.drawCanvas.height;
+    var px = pos.x * w, py = pos.y * h;
+    var threshold = Math.max(10, state.penWidth * 3);
+
+    for (var i = state.strokes.length - 1; i >= 0; i--) {
+        var s = state.strokes[i];
+        if (!s.points || s.points.length < 2) continue;
+        var sw = (s.tool === 'highlighter') ? s.width * 4 : (s.tool === 'eraser') ? s.width * 3 : s.width;
+        var hitDist = Math.max(threshold, sw / 2 + 5);
+        for (var j = 1; j < s.points.length; j++) {
+            var ax = s.points[j - 1].x * w, ay = s.points[j - 1].y * h;
+            var bx = s.points[j].x * w, by = s.points[j].y * h;
+            if (SAB.drawing.distToSegment(px, py, ax, ay, bx, by) < hitDist) {
+                var removed = state.strokes.splice(i, 1)[0];
+                state.undoStack.push({ type: 'erase', data: removed, index: i });
+                state.redoStack.length = 0;
+                SAB.drawing.redrawStrokes();
+                return;
+            }
+        }
+    }
+};
+
+SAB.drawing.distToSegment = function (px, py, ax, ay, bx, by) {
+    var dx = bx - ax, dy = by - ay;
+    var lenSq = dx * dx + dy * dy;
+    if (lenSq === 0) return Math.hypot(px - ax, py - ay);
+    var t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq));
+    return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
 };
 
 SAB.drawing.bindDrawing = function () {

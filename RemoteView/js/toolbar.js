@@ -5,18 +5,41 @@ window.SAB = window.SAB || {};
 
 SAB.toolbar = {};
 
-/* ─── Fullscreen ─── */
-SAB.toolbar.toggleFullscreen = function () {
-    SAB.els.app.classList.add(SAB.cls('fs'));
-    document.body.style.overflow = 'hidden';
-    setTimeout(function () { SAB.drawing.resizeCanvas(); SAB.photos.layoutPhotos(); }, 50);
+/* ─── Dynamic Tool Cursor ─── */
+SAB.toolbar.updateCursor = function () {
+    var canvas = SAB.els.drawCanvas;
+    if (!canvas) return;
+    var tool = SAB.state.tool;
+
+    if (tool === 'text' || tool === 'stamp') { canvas.style.cursor = 'pointer'; return; }
+    if (tool !== 'pen' && tool !== 'highlighter' && tool !== 'eraser') { canvas.style.cursor = 'crosshair'; return; }
+
+    var size = SAB.state.penWidth;
+    if (tool === 'highlighter') size = size * 4;
+    else if (tool === 'eraser') size = Math.max(10, size * 3);
+
+    var r = Math.max(3, size / 2);
+    var svgSize = Math.ceil(r * 2 + 4);
+    var c = svgSize / 2;
+    var hot = Math.round(c);
+
+    var fill, stroke, sw;
+    if (tool === 'eraser') {
+        fill = 'none'; stroke = '#555'; sw = 1.5;
+    } else if (tool === 'highlighter') {
+        fill = 'rgba(255,230,0,0.5)'; stroke = 'none'; sw = 0;
+    } else {
+        fill = SAB.state.penColor; stroke = 'none'; sw = 0;
+    }
+
+    var svgXml = '<svg xmlns="http://www.w3.org/2000/svg" width="' + svgSize + '" height="' + svgSize + '">' +
+        '<circle cx="' + c + '" cy="' + c + '" r="' + r + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>' +
+        '</svg>';
+    var encoded = 'data:image/svg+xml;base64,' + btoa(svgXml);
+    canvas.style.cursor = 'url(' + encoded + ') ' + hot + ' ' + hot + ', crosshair';
 };
 
-SAB.toolbar.exitFullscreen = function () {
-    SAB.els.app.classList.remove(SAB.cls('fs'));
-    document.body.style.overflow = '';
-    setTimeout(function () { SAB.drawing.resizeCanvas(); SAB.photos.layoutPhotos(); }, 50);
-};
+/* ─── Fullscreen (always on — body overflow hidden at boot) ─── */
 
 /* ─── Welcome Overlay ─── */
 SAB.toolbar.hideWelcome = function () {
@@ -115,7 +138,7 @@ SAB.toolbar.activatePenByIndex = function (idx) {
     if (penBtn) penBtn.classList.add(H + '_tool_active');
     SAB.state.tool = 'pen';
     SAB.state.penColor = color;
-    if (SAB.els.drawCanvas) SAB.els.drawCanvas.style.cursor = 'crosshair';
+    SAB.toolbar.updateCursor();
     if (SAB.state.spotlight) SAB.drawing.spotlightOff();
     SAB.toolbar.closeStampPanel();
 };
@@ -132,7 +155,7 @@ SAB.toolbar.activateTool = function (toolName) {
         var penRestore = app.querySelector('[data-tool="pen"][data-color="' + SAB.state.penColor + '"]');
         if (penRestore) penRestore.classList.add(H + '_tool_active');
         SAB.state.tool = 'pen';
-        if (SAB.els.drawCanvas) { SAB.els.drawCanvas.style.cursor = 'crosshair'; SAB.els.drawCanvas.style.pointerEvents = ''; }
+        if (SAB.els.drawCanvas) { SAB.toolbar.updateCursor(); SAB.els.drawCanvas.style.pointerEvents = ''; }
         if (SAB.state.spotlight) SAB.drawing.spotlightOff();
         SAB.toolbar.closeStampPanel();
         return;
@@ -144,7 +167,7 @@ SAB.toolbar.activateTool = function (toolName) {
     if (SAB.state.spotlight) SAB.drawing.spotlightOff();
     if (toolName !== 'stamp') SAB.toolbar.closeStampPanel();
     if (SAB.els.drawCanvas) {
-        SAB.els.drawCanvas.style.cursor = (toolName === 'eraser') ? 'cell' : (toolName === 'text' || toolName === 'stamp') ? 'pointer' : 'crosshair';
+        SAB.toolbar.updateCursor();
         SAB.els.drawCanvas.style.pointerEvents = '';
     }
 };
@@ -187,11 +210,10 @@ SAB.toolbar.showShortcutHelp = function () {
         '<tr><td><kbd>L</kbd></td><td>Lock / unlock board</td></tr>' +
         '<tr><td><kbd>H</kbd></td><td>Hide / show all photos</td></tr>' +
         '<tr><td><kbd>R</kbd></td><td>Rotate visualiser feed (when active)</td></tr>' +
-        '<tr><td><kbd>F</kbd></td><td>Toggle fullscreen</td></tr>' +
         '<tr><td><kbd>Shift</kbd>+<kbd>C</kbd></td><td>Clear drawings</td></tr>' +
         '<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>' +
         '<tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr>' +
-        '<tr><td><kbd>Esc</kbd></td><td>Exit zoom / fullscreen / spotlight</td></tr>' +
+        '<tr><td><kbd>Esc</kbd></td><td>Exit zoom / spotlight</td></tr>' +
         '<tr><td><kbd>PgUp</kbd> <kbd>PgDn</kbd></td><td>Previous / next page</td></tr>' +
         '<tr><td><kbd>?</kbd></td><td>Toggle this help</td></tr>' +
         '</table>' +
@@ -255,12 +277,8 @@ SAB.toolbar.bindToolbar = function () {
     var state = SAB.state;
     var app = SAB.els.app;
 
-    if (SAB.els.fullscreenBtn) SAB.els.fullscreenBtn.addEventListener('click', SAB.toolbar.toggleFullscreen);
-    if (SAB.els.fsExitBtn) SAB.els.fsExitBtn.addEventListener('click', SAB.toolbar.exitFullscreen);
-
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && state.zoomedPhotoId) { SAB.photos.unzoomPhoto(); return; }
-        if (e.key === 'Escape' && app.classList.contains(H + '_fs')) SAB.toolbar.exitFullscreen();
         if (e.key === 'ArrowLeft' && state.zoomedPhotoId) { e.preventDefault(); SAB.photos.cycleZoom(-1); return; }
         if (e.key === 'ArrowRight' && state.zoomedPhotoId) { e.preventDefault(); SAB.photos.cycleZoom(1); return; }
         if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey && state.role === 'display') {
@@ -300,10 +318,6 @@ SAB.toolbar.bindToolbar = function () {
             case 'e': case 'E': e.preventDefault(); SAB.toolbar.activateTool('eraser'); break;
             case 'C':
                 if (e.shiftKey) { e.preventDefault(); if (SAB.els.clearDrawBtn) SAB.els.clearDrawBtn.click(); }
-                break;
-            case 'f': case 'F':
-                e.preventDefault();
-                if (app.classList.contains(H + '_fs')) SAB.toolbar.exitFullscreen(); else SAB.toolbar.toggleFullscreen();
                 break;
             case 'h': case 'H':
                 e.preventDefault();
@@ -378,7 +392,7 @@ SAB.toolbar.bindToolbar = function () {
                 var penRestore = app.querySelector('[data-tool="pen"][data-color="' + state.penColor + '"]') || defaultPenBtn;
                 if (penRestore) penRestore.classList.add(H + '_tool_active');
                 state.tool = 'pen';
-                SAB.els.drawCanvas.style.cursor = 'crosshair';
+                SAB.toolbar.updateCursor();
                 SAB.els.drawCanvas.style.pointerEvents = '';
                 if (state.spotlight) SAB.drawing.spotlightOff();
                 SAB.toolbar.closeStampPanel();
@@ -392,7 +406,7 @@ SAB.toolbar.bindToolbar = function () {
             if (stamp) state.stampChar = stamp;
             if (tool !== 'stamp') SAB.toolbar.closeStampPanel();
             if (state.spotlight) SAB.drawing.spotlightOff();
-            SAB.els.drawCanvas.style.cursor = (tool === 'eraser') ? 'cell' : (tool === 'text' || tool === 'stamp') ? 'pointer' : 'crosshair';
+            SAB.toolbar.updateCursor();
             SAB.els.drawCanvas.style.pointerEvents = '';
         });
     }
@@ -404,6 +418,7 @@ SAB.toolbar.bindToolbar = function () {
             for (var j = 0; j < widthBtns.length; j++) widthBtns[j].classList.remove(H + '_tool_active');
             this.classList.add(H + '_tool_active');
             state.penWidth = parseInt(this.getAttribute('data-width'), 10);
+            SAB.toolbar.updateCursor();
         });
     }
 
@@ -431,4 +446,6 @@ SAB.toolbar.bindToolbar = function () {
         SAB.drawing.redrawStrokes();
         SAB.annotations.redrawStamps();
     });
+
+    SAB.toolbar.updateCursor();
 };

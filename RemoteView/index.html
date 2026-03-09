@@ -26,8 +26,6 @@
             <button class="show_mB4x_pill show_mB4x_pill_hide_all" id="show_mB4x_hideAllBtn" title="Hide or show all photos (H)">&#128584; Hide All</button>
             <button class="show_mB4x_pill show_mB4x_pill_reset" id="show_mB4x_clearAllBtn" title="Clear everything">&#8634; Clear All</button>
             <div class="show_mB4x_pill_sep"></div>
-            <button class="show_mB4x_pill show_mB4x_pill_fs" id="show_mB4x_fullscreenBtn" title="Full screen (F)">&#9974; <span class="show_mB4x_pill_fs_prompt">Full Screen</span></button>
-            <button class="show_mB4x_fs_exit" id="show_mB4x_fsExitBtn" title="Exit full screen (Esc)">&#10005;</button>
             <button class="show_mB4x_pill show_mB4x_pill_help" id="show_mB4x_helpBtn" title="How to use this board">&#9432;</button>
         </div>
     </div>
@@ -37,11 +35,9 @@
                 <div class="show_mB4x_welcome_header">Connect your phone or tablet to get started</div>
                 <div class="show_mB4x_welcome_paths">
                     <div class="show_mB4x_welcome_path show_mB4x_path_qr">
-                        <div class="show_mB4x_path_badge">Quickest</div>
+                        <div class="show_mB4x_path_badge">Scan to connect instantly</div>
                         <div class="show_mB4x_welcome_qr" id="show_mB4x_qr">
-                            <div class="show_mB4x_qr_label">Scan to connect instantly</div>
                         </div>
-                        <div class="show_mB4x_path_desc">Point your phone or tablet&#8217;s camera at the QR code &#8212; it opens the page and connects automatically</div>
                     </div>
                     <div class="show_mB4x_welcome_divider">
                         <span>or</span>
@@ -78,27 +74,9 @@
             <div class="show_mB4x_toast" id="show_mB4x_toast"></div>
         </div>
         <div class="show_mB4x_tools" id="show_mB4x_tools">
+            <!-- Left column: General tools -->
             <div class="show_mB4x_tools_row">
-                <span class="show_mB4x_tool_label">Pen</span>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-tool="pen" data-color="#2c3e50" title="Black pen (Q)"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
-                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#2b6cb0" title="Blue pen (W)"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
-                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#e53e3e" title="Red pen (R)"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
-                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#38a169" title="Green pen (G)"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
-                <div class="show_mB4x_tool_sep"></div>
-                <span class="show_mB4x_tool_label">Size</span>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-width="3" title="Thin"><span class="show_mB4x_pen_dot" style="background:#718096;width:6px;height:6px"></span></button>
-                <button class="show_mB4x_tool_btn" data-width="6" title="Medium"><span class="show_mB4x_pen_dot" style="background:#718096;width:10px;height:10px"></span></button>
-                <button class="show_mB4x_tool_btn" data-width="12" title="Thick"><span class="show_mB4x_pen_dot" style="background:#718096"></span></button>
-                <div class="show_mB4x_tool_sep"></div>
-                <button class="show_mB4x_tool_btn" data-tool="highlighter" title="Highlighter"><span class="show_mB4x_pen_dot" style="background:rgba(255,230,0,0.7)"></span></button>
                 <button class="show_mB4x_tool_btn" data-tool="arrow" title="Arrow">&#10140;</button>
-                <button class="show_mB4x_tool_btn" data-tool="eraser" title="Eraser (E)">&#129531;</button>
-                <div class="show_mB4x_tool_sep"></div>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_undoBtn" title="Undo (Ctrl+Z)">&#8617;</button>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_redoBtn" title="Redo (Ctrl+Shift+Z)">&#8618;</button>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_clearDrawBtn" title="Clear drawings only (Shift+C)">Clear Ink</button>
-            </div>
-            <div class="show_mB4x_tools_row">
                 <button class="show_mB4x_tool_btn" data-tool="text" title="Text label" style="font-weight:800">T</button>
                 <div class="show_mB4x_tool_sep"></div>
                 <button class="show_mB4x_tool_btn show_mB4x_stamp_toggle" id="show_mB4x_stampToggle" title="Stamps">&#10003;&#10007;</button>
@@ -125,6 +103,26 @@
                     <button class="show_mB4x_bg_pill" data-bg="dots" title="Dotted grid"><span class="show_mB4x_bg_dots_icon"></span></button>
                     <button class="show_mB4x_bg_pill" data-bg="lined" title="Lined"><span class="show_mB4x_bg_lined_icon"></span></button>
                 </div>
+            </div>
+            <!-- Right column: Drawing tools -->
+            <div class="show_mB4x_tools_row">
+                <span class="show_mB4x_tool_label">Pen</span>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-tool="pen" data-color="#2c3e50" title="Black pen (Q)"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#2b6cb0" title="Blue pen (W)"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#e53e3e" title="Red pen (R)"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#38a169" title="Green pen (G)"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
+                <div class="show_mB4x_tool_sep"></div>
+                <span class="show_mB4x_tool_label">Size</span>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-width="3" title="Thin"><span class="show_mB4x_pen_dot" style="background:#718096;width:6px;height:6px"></span></button>
+                <button class="show_mB4x_tool_btn" data-width="6" title="Medium"><span class="show_mB4x_pen_dot" style="background:#718096;width:10px;height:10px"></span></button>
+                <button class="show_mB4x_tool_btn" data-width="12" title="Thick"><span class="show_mB4x_pen_dot" style="background:#718096"></span></button>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn" data-tool="highlighter" title="Highlighter"><span class="show_mB4x_pen_dot" style="background:rgba(255,230,0,0.7)"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="eraser" title="Eraser (E)"><svg class="show_mB4x_eraser_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L12 20"/><path d="M6.5 13.5 14 6"/></svg></button>
+                <div class="show_mB4x_tool_sep"></div>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_clearDrawBtn" title="Clear drawings only (Shift+C)">Clear Ink</button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_undoBtn" title="Undo (Ctrl+Z)">&#8617;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_redoBtn" title="Redo (Ctrl+Shift+Z)">&#8618;</button>
             </div>
         </div>
         <div class="show_mB4x_phone_panel" id="show_mB4x_phonePanel">
@@ -193,7 +191,7 @@
                             <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#e53e3e"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
                             <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#38a169"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
                             <div class="show_mB4x_tool_sep"></div>
-                            <button class="show_mB4x_tool_btn" data-rtool="eraser" title="Eraser">&#129531;</button>
+                            <button class="show_mB4x_tool_btn" data-rtool="eraser" title="Eraser"><svg class="show_mB4x_eraser_icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L12 20"/><path d="M6.5 13.5 14 6"/></svg></button>
                             <button class="show_mB4x_tool_btn" data-rtool="arrow">&#10140;</button>
                         </div>
                         <div class="show_mB4x_remote_tools_row">

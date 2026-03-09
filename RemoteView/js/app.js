@@ -9,7 +9,7 @@ SAB.app = {};
 var elNames = [
     'canvasArea', 'drawCanvas', 'photoLayer', 'stampLayer', 'textLayer', 'welcome',
     'roomCodeBig', 'roomCodeSmall', 'roomBadge', 'statusDot', 'waiting', 'pageUrl', 'qr',
-    'fullscreenBtn', 'fsExitBtn', 'loadPhotoBtn', 'saveBtn', 'clearAllBtn', 'hideAllBtn',
+    'loadPhotoBtn', 'saveBtn', 'clearAllBtn', 'hideAllBtn',
     'photoCount', 'pagePills',
     'phonePanel', 'phoneConnect', 'phoneConnected', 'phoneError',
     'codeInput', 'connectBtn', 'disconnectBtn',
@@ -50,6 +50,7 @@ SAB.app.setRole = function (role) {
 function init() {
     populateElements();
     if (!SAB.els.app) return;
+    document.body.style.overflow = 'hidden';
 
     var H = SAB.config.H;
     var canvasArea = SAB.els.canvasArea;

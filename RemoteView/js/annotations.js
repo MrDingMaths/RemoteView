@@ -125,6 +125,10 @@ SAB.annotations.handleUndo = function () {
         var stroke = state.strokes.pop();
         state.redoStack.push({ type: 'stroke', data: stroke });
         SAB.drawing.redrawStrokes();
+    } else if (action.type === 'erase') {
+        state.strokes.splice(action.index, 0, action.data);
+        state.redoStack.push({ type: 'erase', data: action.data, index: action.index });
+        SAB.drawing.redrawStrokes();
     } else if (action.type === 'stamp') {
         var stamp = state.stamps.pop();
         state.redoStack.push({ type: 'stamp', data: stamp });
@@ -148,6 +152,10 @@ SAB.annotations.handleRedo = function () {
     if (action.type === 'stroke' && action.data) {
         state.strokes.push(action.data);
         state.undoStack.push({ type: 'stroke' });
+        SAB.drawing.redrawStrokes();
+    } else if (action.type === 'erase' && action.data) {
+        state.strokes.splice(action.index, 1);
+        state.undoStack.push({ type: 'erase', data: action.data, index: action.index });
         SAB.drawing.redrawStrokes();
     } else if (action.type === 'stamp' && action.data) {
         state.stamps.push(action.data);
