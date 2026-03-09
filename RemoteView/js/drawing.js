@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — Canvas Drawing Engine
+   BEAMIT — Canvas Drawing Engine
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 

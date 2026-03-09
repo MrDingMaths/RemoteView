@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — Configuration & Constants
+   BEAMIT — Configuration & Constants
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 

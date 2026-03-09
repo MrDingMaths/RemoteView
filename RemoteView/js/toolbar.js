@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — Toolbar & Keyboard Shortcuts
+   BEAMIT — Toolbar & Keyboard Shortcuts
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 
@@ -236,7 +236,7 @@ SAB.toolbar.showHelp = function () {
     overlay.innerHTML =
         '<div class="' + H + '_help_card">' +
           '<button class="' + H + '_help_close" title="Close">\u2715</button>' +
-          '<div class="' + H + '_help_title">How to use the Show All Board</div>' +
+          '<div class="' + H + '_help_title">How to use Beamit</div>' +
           steps +
         '</div>';
 

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — Stamps & Text Annotations
+   BEAMIT — Stamps & Text Annotations
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 

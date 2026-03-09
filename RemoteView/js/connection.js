@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — PeerJS Connection & Communication
+   BEAMIT — PeerJS Connection & Communication
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 

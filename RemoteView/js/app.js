@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — Main Application (Init & Boot)
+   BEAMIT — Main Application (Init & Boot)
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 

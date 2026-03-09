@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — Visualiser (Live Camera Feed)
+   BEAMIT — Visualiser (Live Camera Feed)
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 

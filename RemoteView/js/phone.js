@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SHOW ALL BOARD — Phone Panel & Remote Draw
+   BEAMIT — Phone Panel & Remote Draw
    ═══════════════════════════════════════════════════════════════════════ */
 window.SAB = window.SAB || {};
 
