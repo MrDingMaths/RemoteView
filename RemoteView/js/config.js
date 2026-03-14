@@ -17,10 +17,11 @@ SAB.config = {
     CODE_LEN: 6,
     STAMP_COLORS: { '\u2713': '#38a169', '\u2717': '#e53e3e', '?': '#2b6cb0', '\u2605': '#d69e2e' },
     PEN_COLORS: ['#2c3e50', '#2b6cb0', '#e53e3e', '#38a169'],
-    VIS_FPS: 12,
-    VIS_QUALITY: 0.55,
-    VIS_MAX_W: 960,
-    VIS_MAX_H: 720
+    VIS_FPS: 24,
+    VIS_QUALITY: 0.75,
+    VIS_MAX_W: 1280,
+    VIS_MAX_H: 960,
+    MAX_UNDO: 100
 };
 
 SAB.cls = function (name) { return SAB.config.H + '_' + name; };

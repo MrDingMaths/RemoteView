@@ -81,14 +81,17 @@ SAB.connection.initDisplay = function () {
 
     state.peer.on('disconnected', function () {
         if (state.peer && !state.peer.destroyed) {
-            try { state.peer.reconnect(); } catch (e) {}
+            try { state.peer.reconnect(); } catch (e) { console.warn('Peer reconnect failed:', e); }
         }
     });
 };
 
 /* Message dispatch map for display-side data handler */
 var displayHandlers = {
-    'photo': function (data) { SAB.photos.addPhoto(data.dataUrl, data.seq); },
+    'photo': function (data) {
+        if (!data.dataUrl) { console.warn('photo message missing dataUrl'); return; }
+        SAB.photos.addPhoto(data.dataUrl, data.seq);
+    },
     'chunk_start': function (data, chunkBuf) {
         chunkBuf[data.id] = { total: data.total, parts: [], received: 0, seq: data.seq };
     },
@@ -172,7 +175,11 @@ SAB.connection.setupDisplayConn = function (conn) {
 
     conn.on('data', function (data) {
         if (data && data.type && displayHandlers[data.type]) {
-            displayHandlers[data.type](data, chunkBuf, conn);
+            try {
+                displayHandlers[data.type](data, chunkBuf, conn);
+            } catch (e) {
+                console.warn('Display handler error for type "' + data.type + '":', e);
+            }
         }
     });
 

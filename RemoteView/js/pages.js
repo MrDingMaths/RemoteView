@@ -20,12 +20,15 @@ SAB.pages.saveActivePage = function () {
     var state = SAB.state;
     var pg = state.pages[state.activePage];
     if (!pg) return;
-    pg.photos    = state.photos;
-    pg.strokes   = state.strokes;
-    pg.stamps    = state.stamps;
-    pg.texts     = state.texts;
-    pg.undoStack = state.undoStack;
-    pg.redoStack = state.redoStack;
+    /* Shallow-copy each array so the page slot and state.xxx are independent
+       references. The contained objects (strokes, photos, etc.) are shared
+       but are never mutated in-place, so this is safe. */
+    pg.photos    = state.photos.slice();
+    pg.strokes   = state.strokes.slice();
+    pg.stamps    = state.stamps.slice();
+    pg.texts     = state.texts.slice();
+    pg.undoStack = state.undoStack.slice();
+    pg.redoStack = state.redoStack.slice();
     pg.zoomedPhotoId = state.zoomedPhotoId;
 };
 
@@ -35,12 +38,16 @@ SAB.pages.loadPage = function (idx) {
     var pg = state.pages[idx];
     if (!pg) return;
     state.activePage = idx;
-    state.photos    = pg.photos;
-    state.strokes   = pg.strokes;
-    state.stamps    = pg.stamps;
-    state.texts     = pg.texts;
-    state.undoStack = pg.undoStack;
-    state.redoStack = pg.redoStack;
+
+    /* Clean up text drag listeners from the page being left */
+    state.texts.forEach(function (t) { if (t.cleanup) t.cleanup(); });
+
+    state.photos    = pg.photos.slice();
+    state.strokes   = pg.strokes.slice();
+    state.stamps    = pg.stamps.slice();
+    state.texts     = pg.texts.slice();
+    state.undoStack = pg.undoStack.slice();
+    state.redoStack = pg.redoStack.slice();
     state.zoomedPhotoId = null;
 
     SAB.els.photoLayer.innerHTML = '';
@@ -94,6 +101,8 @@ SAB.pages.buildPagePills = function () {
         pill.className = H + '_page_pill' + (i === state.activePage ? ' ' + H + '_page_active' : '');
         pill.textContent = i + 1;
         pill.setAttribute('title', 'Page ' + (i + 1) + ' (PgUp/PgDn)');
+        pill.setAttribute('aria-label', 'Go to page ' + (i + 1));
+        pill.setAttribute('aria-pressed', i === state.activePage ? 'true' : 'false');
         (function (idx) {
             pill.addEventListener('click', function () { SAB.pages.switchPage(idx); });
         })(i);
@@ -104,6 +113,7 @@ SAB.pages.buildPagePills = function () {
         addBtn.className = H + '_page_pill ' + H + '_page_pill_add';
         addBtn.textContent = '+';
         addBtn.setAttribute('title', 'Add new page');
+        addBtn.setAttribute('aria-label', 'Add new page');
         addBtn.addEventListener('click', function () { SAB.pages.addPage(); });
         wrap.appendChild(addBtn);
     }
@@ -113,7 +123,7 @@ SAB.pages.broadcastPageState = function () {
     var state = SAB.state;
     var msg = { type: 'page_sync', activePage: state.activePage, totalPages: state.pages.length };
     for (var i = 0; i < state.connections.length; i++) {
-        try { state.connections[i].send(msg); } catch (e) {}
+        try { state.connections[i].send(msg); } catch (e) { console.warn('broadcastPageState send failed:', e); }
     }
 };
 

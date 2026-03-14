@@ -10,6 +10,7 @@ SAB.photos.addPhoto = function (dataUrl, seq) {
     var cfg = SAB.config;
     if (state.photos.length >= cfg.MAX_PHOTOS) {
         var oldest = state.photos.shift();
+        SAB.photos._clearHoverTimer(oldest);
         if (oldest.slotEl && oldest.slotEl.parentNode) oldest.slotEl.parentNode.removeChild(oldest.slotEl);
         SAB.utils.showToast('Photo limit reached \u2014 oldest removed');
     }
@@ -21,6 +22,13 @@ SAB.photos.addPhoto = function (dataUrl, seq) {
     SAB.photos.updatePhotoCount();
 };
 
+SAB.photos._clearHoverTimer = function (photo) {
+    if (photo && photo._hoverTimer) {
+        clearTimeout(photo._hoverTimer);
+        photo._hoverTimer = null;
+    }
+};
+
 SAB.photos.findPhotoBySeq = function (seq) {
     return SAB.state.photos.find(function (p) { return p.seq === seq; });
 };
@@ -28,7 +36,10 @@ SAB.photos.findPhotoBySeq = function (seq) {
 SAB.photos.removePhoto = function (id) {
     var state = SAB.state;
     state.photos = state.photos.filter(function (p) {
-        if (p.id === id && p.slotEl && p.slotEl.parentNode) p.slotEl.parentNode.removeChild(p.slotEl);
+        if (p.id === id) {
+            SAB.photos._clearHoverTimer(p);
+            if (p.slotEl && p.slotEl.parentNode) p.slotEl.parentNode.removeChild(p.slotEl);
+        }
         return p.id !== id;
     });
     SAB.photos.layoutPhotos();
@@ -39,12 +50,18 @@ SAB.photos.removePhoto = function (id) {
     }
 };
 
+/* Rotate without full DOM rebuild — update image src in-place */
 SAB.photos.rotatePhoto = function (id) {
     var photo = SAB.state.photos.find(function (p) { return p.id === id; });
     if (!photo) return;
     SAB.utils.rotateDataUrl(photo.dataUrl, function (newUrl) {
         photo.dataUrl = newUrl;
-        SAB.photos.layoutPhotos();
+        if (photo.slotEl) {
+            var img = photo.slotEl.querySelector('img');
+            if (img) img.src = newUrl;
+        } else {
+            SAB.photos.layoutPhotos();
+        }
     });
 };
 
@@ -60,11 +77,25 @@ SAB.photos.downloadPhoto = function (id) {
     document.body.removeChild(a);
 };
 
+/* Toggle hidden without full DOM rebuild — update classes in-place */
 SAB.photos.togglePhotoHide = function (id) {
+    var H = SAB.config.H;
     var photo = SAB.state.photos.find(function (p) { return p.id === id; });
     if (!photo) return;
     photo.hidden = !photo.hidden;
-    SAB.photos.layoutPhotos();
+    if (photo.slotEl) {
+        if (photo.hidden) photo.slotEl.classList.add(H + '_photo_hidden');
+        else photo.slotEl.classList.remove(H + '_photo_hidden');
+        var hideBtn = photo.slotEl.querySelector('.' + H + '_photo_hide');
+        if (hideBtn) {
+            hideBtn.textContent = photo.hidden ? '\uD83D\uDC41\uFE0F' : '\uD83D\uDE48';
+            if (photo.hidden) hideBtn.classList.add(H + '_hiding');
+            else hideBtn.classList.remove(H + '_hiding');
+        }
+    } else {
+        SAB.photos.layoutPhotos();
+    }
+    SAB.photos.updateHideAllBtn();
 };
 
 SAB.photos.updatePhotoCount = function () {
@@ -72,15 +103,32 @@ SAB.photos.updatePhotoCount = function () {
     SAB.photos.updateHideAllBtn();
 };
 
+/* Hide/show all without full DOM rebuild */
 SAB.photos.hideAllPhotos = function () {
+    var H = SAB.config.H;
     if (SAB.state.photos.length === 0) return;
-    SAB.state.photos.forEach(function (p) { p.hidden = true; });
-    SAB.photos.layoutPhotos();
+    SAB.state.photos.forEach(function (p) {
+        p.hidden = true;
+        if (p.slotEl) {
+            p.slotEl.classList.add(H + '_photo_hidden');
+            var hideBtn = p.slotEl.querySelector('.' + H + '_photo_hide');
+            if (hideBtn) { hideBtn.textContent = '\uD83D\uDC41\uFE0F'; hideBtn.classList.add(H + '_hiding'); }
+        }
+    });
+    SAB.photos.updateHideAllBtn();
 };
 
 SAB.photos.showAllPhotos = function () {
-    SAB.state.photos.forEach(function (p) { p.hidden = false; });
-    SAB.photos.layoutPhotos();
+    var H = SAB.config.H;
+    SAB.state.photos.forEach(function (p) {
+        p.hidden = false;
+        if (p.slotEl) {
+            p.slotEl.classList.remove(H + '_photo_hidden');
+            var hideBtn = p.slotEl.querySelector('.' + H + '_photo_hide');
+            if (hideBtn) { hideBtn.textContent = '\uD83D\uDE48'; hideBtn.classList.remove(H + '_hiding'); }
+        }
+    });
+    SAB.photos.updateHideAllBtn();
 };
 
 SAB.photos.updateHideAllBtn = function () {
@@ -198,6 +246,10 @@ SAB.photos.layoutPhotos = function () {
     state.zoomedPhotoId = null;
     canvasArea.classList.remove(H + '_zoom_active');
     SAB.photos.broadcastZoomState();
+
+    /* Clear any lingering hover timers before destroying DOM */
+    state.photos.forEach(function (p) { SAB.photos._clearHoverTimer(p); });
+
     photoLayer.innerHTML = '';
     var n = state.photos.length;
     if (n === 0) return;
@@ -268,22 +320,35 @@ SAB.photos.layoutPhotos = function () {
 
         var img = document.createElement('img');
         img.src = photo.dataUrl;
+        img.alt = 'Student work photo ' + (i + 1);
 
         var cover = document.createElement('div');
         cover.className = H + '_photo_cover';
-        cover.innerHTML = '<span class="' + H + '_photo_cover_num">' + (i + 1) + '</span><span class="' + H + '_photo_cover_label">Tap to reveal</span>';
+        var coverNum = document.createElement('span');
+        coverNum.className = H + '_photo_cover_num';
+        coverNum.textContent = i + 1;
+        var coverLabel = document.createElement('span');
+        coverLabel.className = H + '_photo_cover_label';
+        coverLabel.textContent = 'Tap to reveal';
+        cover.appendChild(coverNum);
+        cover.appendChild(coverLabel);
         cover.addEventListener('click', function (e) { e.stopPropagation(); SAB.photos.togglePhotoHide(photo.id); });
 
         var rotBtn = SAB.utils.makePhotoBtn('\u21BB', H + '_photo_rotate', function () { SAB.photos.rotatePhoto(photo.id); });
+        rotBtn.setAttribute('aria-label', 'Rotate photo ' + (i + 1));
         var hideBtn = SAB.utils.makePhotoBtn(photo.hidden ? '\uD83D\uDC41\uFE0F' : '\uD83D\uDE48', H + '_photo_hide' + (photo.hidden ? ' ' + H + '_hiding' : ''), function () { SAB.photos.togglePhotoHide(photo.id); });
+        hideBtn.setAttribute('aria-label', (photo.hidden ? 'Show' : 'Hide') + ' photo ' + (i + 1));
         var delBtn = SAB.utils.makePhotoBtn('\u2715', H + '_photo_remove', function () { SAB.photos.removePhoto(photo.id); });
+        delBtn.setAttribute('aria-label', 'Remove photo ' + (i + 1));
         var dlBtn = SAB.utils.makePhotoBtn('\u2B07', H + '_photo_download', function () { SAB.photos.downloadPhoto(photo.id); });
         dlBtn.setAttribute('title', 'Download photo');
+        dlBtn.setAttribute('aria-label', 'Download photo ' + (i + 1));
 
         var numBadge = document.createElement('button');
         numBadge.className = H + '_photo_num_badge';
         numBadge.textContent = i + 1;
         numBadge.setAttribute('title', 'Zoom in');
+        numBadge.setAttribute('aria-label', 'Zoom photo ' + (i + 1));
         (function (pid) {
             numBadge.addEventListener('click', function (e) {
                 e.stopPropagation();
@@ -302,21 +367,29 @@ SAB.photos.layoutPhotos = function () {
         photoLayer.appendChild(slot);
         photo.slotEl = slot;
 
-        SAB.photos.bindSlotHover(slot);
+        SAB.photos.bindSlotHover(slot, photo);
 
         setTimeout(function () { slot.classList.remove(H + '_photo_new'); }, 500);
     });
     SAB.photos.updateHideAllBtn();
 };
 
-SAB.photos.bindSlotHover = function (slot) {
+SAB.photos.bindSlotHover = function (slot, photo) {
     var H = SAB.config.H;
-    var timer = null;
     var GRACE = 450;
     var cls = H + '_slot_hover';
 
-    function enter() { clearTimeout(timer); slot.classList.add(cls); }
-    function leave() { clearTimeout(timer); timer = setTimeout(function () { slot.classList.remove(cls); }, GRACE); }
+    function enter() {
+        SAB.photos._clearHoverTimer(photo);
+        slot.classList.add(cls);
+    }
+    function leave() {
+        SAB.photos._clearHoverTimer(photo);
+        photo._hoverTimer = setTimeout(function () {
+            photo._hoverTimer = null;
+            if (slot.parentNode) slot.classList.remove(cls);
+        }, GRACE);
+    }
 
     var targets = slot.querySelectorAll('.' + H + '_photo_btn, .' + H + '_photo_num_badge');
     for (var i = 0; i < targets.length; i++) {

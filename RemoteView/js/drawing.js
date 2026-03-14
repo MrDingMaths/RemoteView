@@ -5,6 +5,26 @@ window.SAB = window.SAB || {};
 
 SAB.drawing = {};
 
+/* ─── Offscreen strokes cache (used to speed up arrow preview) ─── */
+var _strokesCache = null;
+
+/* ─── RAF handles for throttled operations ─── */
+var _eraserRafId = null;
+var _eraserPendingPos = null;
+var _spotlightRafId = null;
+
+/* ─── Unique stroke ID helper ─── */
+SAB.drawing._newStrokeId = function () {
+    return 'str_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+};
+
+/* ─── Undo stack cap helper ─── */
+SAB.drawing._capUndo = function () {
+    var max = SAB.config.MAX_UNDO;
+    var u = SAB.state.undoStack;
+    if (u.length > max) u.splice(0, u.length - max);
+};
+
 SAB.drawing.resizeCanvas = function () {
     var drawCanvas = SAB.els.drawCanvas;
     var canvasArea = SAB.els.canvasArea;
@@ -13,6 +33,7 @@ SAB.drawing.resizeCanvas = function () {
     if (w === 0 || h === 0) return;
     drawCanvas.width = w;
     drawCanvas.height = h;
+    _strokesCache = null;          /* cache is stale after resize */
     SAB.drawing.redrawStrokes();
     if (SAB.state.spotlight) SAB.drawing.renderSpotlight();
     if (SAB.state.visRotation) SAB.visualiser.applyRotation();
@@ -21,8 +42,18 @@ SAB.drawing.resizeCanvas = function () {
 SAB.drawing.redrawStrokes = function () {
     var ctx = SAB.els.ctx;
     if (!ctx) return;
-    ctx.clearRect(0, 0, SAB.els.drawCanvas.width, SAB.els.drawCanvas.height);
+    var w = SAB.els.drawCanvas.width, h = SAB.els.drawCanvas.height;
+    ctx.clearRect(0, 0, w, h);
     SAB.state.strokes.forEach(function (s) { SAB.drawing.drawStroke(s); });
+
+    /* Refresh offscreen cache after every full redraw */
+    if (!_strokesCache || _strokesCache.width !== w || _strokesCache.height !== h) {
+        _strokesCache = document.createElement('canvas');
+        _strokesCache.width = w;
+        _strokesCache.height = h;
+    }
+    _strokesCache.getContext('2d').clearRect(0, 0, w, h);
+    _strokesCache.getContext('2d').drawImage(SAB.els.drawCanvas, 0, 0);
 };
 
 SAB.drawing.drawArrowhead = function (cx, fromX, fromY, toX, toY, size) {
@@ -119,6 +150,7 @@ SAB.drawing.startDrawing = function (e) {
     SAB.toolbar.hideWelcome();
     state.isDrawing = true;
     state.currentStroke = {
+        id: SAB.drawing._newStrokeId(),
         points: [pos],
         color: state.penColor,
         width: state.penWidth,
@@ -134,14 +166,26 @@ SAB.drawing.continueDrawing = function (e) {
     var drawCanvas = SAB.els.drawCanvas;
     var ctx = SAB.els.ctx;
 
+    /* Eraser — throttle hit-testing to one per animation frame */
     if (state.tool === 'eraser') {
-        SAB.drawing.eraseStrokeAt(pos);
+        _eraserPendingPos = pos;
+        if (!_eraserRafId) {
+            _eraserRafId = requestAnimationFrame(function () {
+                _eraserRafId = null;
+                if (_eraserPendingPos) {
+                    SAB.drawing.eraseStrokeAt(_eraserPendingPos);
+                    _eraserPendingPos = null;
+                }
+            });
+        }
         return;
     }
 
+    /* Arrow preview — blit cache instead of redrawing all strokes */
     if (state.tool === 'arrow' && state.lineStart) {
-        SAB.drawing.redrawStrokes();
         var w = drawCanvas.width, h = drawCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+        if (_strokesCache) ctx.drawImage(_strokesCache, 0, 0);
         var sx = state.lineStart.x * w, sy = state.lineStart.y * h;
         var ex = pos.x * w, ey = pos.y * h;
         ctx.save();
@@ -205,6 +249,7 @@ SAB.drawing.stopDrawing = function (e) {
     if (state.tool === 'arrow' && state.lineStart) {
         var pos = SAB.drawing.getPointerPos(e);
         var arrowStroke = {
+            id: SAB.drawing._newStrokeId(),
             points: [state.lineStart, pos],
             color: state.penColor,
             width: state.penWidth,
@@ -212,6 +257,7 @@ SAB.drawing.stopDrawing = function (e) {
         };
         state.strokes.push(arrowStroke);
         state.undoStack.push({ type: 'stroke' });
+        SAB.drawing._capUndo();
         state.redoStack.length = 0;
         state.lineStart = null;
         SAB.drawing.redrawStrokes();
@@ -219,8 +265,13 @@ SAB.drawing.stopDrawing = function (e) {
     }
 
     if (state.currentStroke && state.currentStroke.points.length >= 2) {
+        /* Douglas-Peucker point simplification — reduces points ~80% with no visible quality loss */
+        if (state.currentStroke.points.length > 4) {
+            state.currentStroke.points = SAB.drawing.simplifyPoints(state.currentStroke.points, 0.0005);
+        }
         state.strokes.push(state.currentStroke);
         state.undoStack.push({ type: 'stroke' });
+        SAB.drawing._capUndo();
         state.redoStack.length = 0;
     }
     state.currentStroke = null;
@@ -243,8 +294,11 @@ SAB.drawing.eraseStrokeAt = function (pos) {
             var bx = s.points[j].x * w, by = s.points[j].y * h;
             if (SAB.drawing.distToSegment(px, py, ax, ay, bx, by) < hitDist) {
                 var removed = state.strokes.splice(i, 1)[0];
-                state.undoStack.push({ type: 'erase', data: removed, index: i });
+                /* Store the object itself — not the index — so undo/redo is stable */
+                state.undoStack.push({ type: 'erase', data: removed });
+                SAB.drawing._capUndo();
                 state.redoStack.length = 0;
+                _strokesCache = null;   /* cache is now stale */
                 SAB.drawing.redrawStrokes();
                 return;
             }
@@ -258,6 +312,29 @@ SAB.drawing.distToSegment = function (px, py, ax, ay, bx, by) {
     if (lenSq === 0) return Math.hypot(px - ax, py - ay);
     var t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq));
     return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+};
+
+/* ─── Douglas-Peucker Point Simplification ─── */
+SAB.drawing.perpendicularDist = function (p, a, b) {
+    var dx = b.x - a.x, dy = b.y - a.y;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    if (len === 0) return Math.sqrt((p.x - a.x) * (p.x - a.x) + (p.y - a.y) * (p.y - a.y));
+    return Math.abs((p.x - a.x) * dy - (p.y - a.y) * dx) / len;
+};
+
+SAB.drawing.simplifyPoints = function (pts, eps) {
+    if (pts.length <= 2) return pts;
+    var maxDist = 0, maxIdx = 0;
+    for (var i = 1; i < pts.length - 1; i++) {
+        var d = SAB.drawing.perpendicularDist(pts[i], pts[0], pts[pts.length - 1]);
+        if (d > maxDist) { maxDist = d; maxIdx = i; }
+    }
+    if (maxDist > eps) {
+        var left  = SAB.drawing.simplifyPoints(pts.slice(0, maxIdx + 1), eps);
+        var right = SAB.drawing.simplifyPoints(pts.slice(maxIdx), eps);
+        return left.slice(0, -1).concat(right);
+    }
+    return [pts[0], pts[pts.length - 1]];
 };
 
 SAB.drawing.bindDrawing = function () {
@@ -318,11 +395,17 @@ SAB.drawing.bindSpotlight = function () {
     });
 };
 
+/* Throttle spotlight CSS updates to one per animation frame */
 SAB.drawing.moveSpotlightTo = function (e) {
     var rect = SAB.els.spotlightOverlay.getBoundingClientRect();
     SAB.state.spotlightX = (e.clientX - rect.left) / rect.width;
     SAB.state.spotlightY = (e.clientY - rect.top) / rect.height;
-    SAB.drawing.renderSpotlight();
+    if (!_spotlightRafId) {
+        _spotlightRafId = requestAnimationFrame(function () {
+            _spotlightRafId = null;
+            SAB.drawing.renderSpotlight();
+        });
+    }
 };
 
 SAB.drawing.spotlightOn = function () {

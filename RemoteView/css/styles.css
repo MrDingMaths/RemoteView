@@ -95,16 +95,18 @@
 #show_mB4x_app .show_mB4x_photo_num_badge:active { transform: scale(0.95); }
 #show_mB4x_app .show_mB4x_photo_slot.show_mB4x_photo_hidden .show_mB4x_photo_num_badge { display: none; }
 
-/* ─── Touch-friendly photo buttons ─── */
+/* ─── Touch-friendly photo buttons (min 44×44px for WCAG 2.5.5) ─── */
 @media (pointer: coarse) {
-    #show_mB4x_app .show_mB4x_photo_btn { width: 38px; height: 38px; font-size: 1em; opacity: 0.85; }
+    #show_mB4x_app .show_mB4x_photo_btn { min-width: 44px; min-height: 44px; width: 44px; height: 44px; font-size: 1em; opacity: 0.85; }
     #show_mB4x_app .show_mB4x_photo_slot .show_mB4x_photo_btn { opacity: 0.85; }
-    #show_mB4x_app .show_mB4x_photo_remove { top: -10px; right: -10px; }
-    #show_mB4x_app .show_mB4x_photo_rotate { top: -10px; left: -10px; }
-    #show_mB4x_app .show_mB4x_photo_hide { top: -10px; left: 32px; font-size: 0.85em; }
-    #show_mB4x_app .show_mB4x_photo_download { bottom: -10px; right: -10px; font-size: 0.85em; }
-    #show_mB4x_app .show_mB4x_photo_num_badge { min-width: 32px; height: 32px; font-size: 0.9em; padding: 0 10px; bottom: 8px; left: 8px; }
+    #show_mB4x_app .show_mB4x_photo_remove { top: -12px; right: -12px; }
+    #show_mB4x_app .show_mB4x_photo_rotate { top: -12px; left: -12px; }
+    #show_mB4x_app .show_mB4x_photo_hide { top: -12px; left: 36px; font-size: 0.85em; }
+    #show_mB4x_app .show_mB4x_photo_download { bottom: -12px; right: -12px; font-size: 0.85em; }
+    #show_mB4x_app .show_mB4x_photo_num_badge { min-width: 44px; height: 44px; font-size: 0.9em; padding: 0 10px; bottom: 8px; left: 8px; }
     #show_mB4x_app .show_mB4x_zoom_nav_btn { width: 44px; height: 44px; font-size: 1.3em; }
+    #show_mB4x_app .show_mB4x_tool_btn { min-width: 44px; min-height: 44px; }
+    #show_mB4x_app .show_mB4x_phone_page_btn { min-width: 44px; min-height: 44px; }
 }
 
 /* ─── Hidden photo cover ─── */
@@ -511,3 +513,17 @@
 /* ─── Visualiser bar auto-fade ─── */
 #show_mB4x_app .show_mB4x_vis_display_bar { transition: opacity 0.4s ease; }
 #show_mB4x_app .show_mB4x_vis_display_bar.show_mB4x_vis_bar_faded { opacity: 0.1; pointer-events: none; }
+
+/* ═══ FOCUS VISIBILITY (WCAG 2.4.7) ═══ */
+#show_mB4x_app button:focus-visible,
+#show_mB4x_app input:focus-visible,
+#show_mB4x_app [tabindex]:focus-visible {
+    outline: 2px solid #2b6cb0;
+    outline-offset: 2px;
+}
+/* Suppress focus ring on mouse/touch click (only show on keyboard) */
+#show_mB4x_app button:focus:not(:focus-visible),
+#show_mB4x_app input:focus:not(:focus-visible),
+#show_mB4x_app [tabindex]:focus:not(:focus-visible) {
+    outline: none;
+}

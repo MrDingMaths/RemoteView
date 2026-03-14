@@ -55,7 +55,7 @@ SAB.visualiser.startPhone = function () {
 
     SAB.visualiser.showStatus('Starting camera\u2026');
     var constraints = {
-        video: { facingMode: { ideal: state.visFacingMode }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { facingMode: { ideal: state.visFacingMode }, width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false
     };
 
@@ -78,7 +78,15 @@ SAB.visualiser.startPhone = function () {
 
             setTimeout(function () {
                 if (!state.visStreaming) return;
-                state.visFrameTimer = setInterval(SAB.visualiser.captureAndSendFrame, 1000 / cfg.VIS_FPS);
+                state._visLastFrameTime = 0;
+                (function tick(now) {
+                    if (!state.visStreaming) return;
+                    state.visFrameRaf = requestAnimationFrame(tick);
+                    if (now - state._visLastFrameTime >= 1000 / cfg.VIS_FPS) {
+                        state._visLastFrameTime = now;
+                        SAB.visualiser.captureAndSendFrame();
+                    }
+                })(0);
                 SAB.visualiser.showStatus('');
             }, 400);
 
@@ -108,7 +116,7 @@ SAB.visualiser.captureAndSendFrame = function () {
     var preview = SAB.$('visPreview');
     if (!preview || !preview.videoWidth) return;
 
-    if (state.conn && state.conn.dataChannel && state.conn.dataChannel.bufferedAmount > 64000) return;
+    if (state.conn && state.conn.dataChannel && state.conn.dataChannel.bufferedAmount > 128000) return;
 
     var vw = preview.videoWidth, vh = preview.videoHeight;
     var scale = Math.min(cfg.VIS_MAX_W / vw, cfg.VIS_MAX_H / vh, 1);
@@ -120,7 +128,10 @@ SAB.visualiser.captureAndSendFrame = function () {
     }
 
     visCaptureCtx.drawImage(preview, 0, 0, cw, ch);
-    var dataUrl = visCaptureCanvas.toDataURL('image/jpeg', cfg.VIS_QUALITY);
+    var dataUrl = visCaptureCanvas.toDataURL('image/webp', cfg.VIS_QUALITY);
+    if (dataUrl.indexOf('data:image/webp') !== 0) {
+        dataUrl = visCaptureCanvas.toDataURL('image/jpeg', cfg.VIS_QUALITY);
+    }
     SAB.connection.sendRemoteCmd({ type: 'visualiser_frame', dataUrl: dataUrl });
 };
 
@@ -135,7 +146,7 @@ SAB.visualiser.stopPhone = function () {
     var flipBtn = SAB.$('visFlipBtn');
     var frozenBadge = SAB.$('visFrozenBadge');
 
-    if (state.visFrameTimer) { clearInterval(state.visFrameTimer); state.visFrameTimer = null; }
+    if (state.visFrameRaf) { cancelAnimationFrame(state.visFrameRaf); state.visFrameRaf = null; }
 
     if (state.visStream) {
         state.visStream.getTracks().forEach(function (t) { t.stop(); });
@@ -190,7 +201,7 @@ SAB.visualiser.flipCamera = function () {
     if (!state.visStreaming) return;
     state.visFacingMode = (state.visFacingMode === 'environment') ? 'user' : 'environment';
 
-    if (state.visFrameTimer) { clearInterval(state.visFrameTimer); state.visFrameTimer = null; }
+    if (state.visFrameRaf) { cancelAnimationFrame(state.visFrameRaf); state.visFrameRaf = null; }
     if (state.visStream) { state.visStream.getTracks().forEach(function (t) { t.stop(); }); state.visStream = null; }
     state.visStreaming = false;
     state.visFrozen = false;

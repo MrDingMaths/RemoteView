@@ -39,8 +39,6 @@ SAB.toolbar.updateCursor = function () {
     canvas.style.cursor = 'url(' + encoded + ') ' + hot + ' ' + hot + ', crosshair';
 };
 
-/* ─── Fullscreen (always on — body overflow hidden at boot) ─── */
-
 /* ─── Welcome Overlay ─── */
 SAB.toolbar.hideWelcome = function () {
     if (SAB.els.welcome) { SAB.els.welcome.style.display = 'none'; SAB.state.welcomeVisible = false; }
@@ -175,6 +173,8 @@ SAB.toolbar.activateTool = function (toolName) {
 /* ─── Clear All ─── */
 SAB.toolbar.doClearAll = function () {
     var state = SAB.state;
+    /* Clean up text drag listeners before discarding text objects */
+    state.texts.forEach(function (t) { if (t.cleanup) t.cleanup(); });
     state.photos = [];
     state.strokes = [];
     state.stamps = [];
@@ -189,6 +189,27 @@ SAB.toolbar.doClearAll = function () {
     if (!state.localDisplay && !state.connected) SAB.toolbar.showWelcome();
 };
 
+/* ─── Focus trap helper for modal overlays ─── */
+SAB.toolbar._trapFocus = function (overlay) {
+    var focusable = overlay.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable.length) return function () {};
+    var first = focusable[0];
+    var last  = focusable[focusable.length - 1];
+    first.focus();
+    function handler(e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+            if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+        }
+    }
+    overlay.addEventListener('keydown', handler);
+    return function () { overlay.removeEventListener('keydown', handler); };
+};
+
 /* ─── Shortcut Help ─── */
 SAB.toolbar.showShortcutHelp = function () {
     var H = SAB.config.H;
@@ -196,8 +217,13 @@ SAB.toolbar.showShortcutHelp = function () {
     var existing = app.querySelector('.' + H + '_shortcut_help');
     if (existing) { existing.remove(); return; }
 
+    var triggerEl = document.activeElement;
+
     var overlay = document.createElement('div');
     overlay.className = H + '_shortcut_help';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Keyboard shortcuts');
     overlay.innerHTML =
         '<div class="' + H + '_shortcut_card">' +
         '<h3 style="margin:0 0 12px;font-size:16px;font-weight:700;color:#2d3748">\u2328 Keyboard Shortcuts</h3>' +
@@ -213,18 +239,25 @@ SAB.toolbar.showShortcutHelp = function () {
         '<tr><td><kbd>Shift</kbd>+<kbd>C</kbd></td><td>Clear drawings</td></tr>' +
         '<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>' +
         '<tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr>' +
-        '<tr><td><kbd>Esc</kbd></td><td>Exit zoom / spotlight</td></tr>' +
+        '<tr><td><kbd>Esc</kbd></td><td>Exit zoom / spotlight / this panel</td></tr>' +
         '<tr><td><kbd>PgUp</kbd> <kbd>PgDn</kbd></td><td>Previous / next page</td></tr>' +
         '<tr><td><kbd>?</kbd></td><td>Toggle this help</td></tr>' +
         '</table>' +
         '<p style="margin:10px 0 0;font-size:11px;color:#a0aec0;text-align:center">Click anywhere to close</p>' +
         '</div>';
 
-    overlay.addEventListener('click', function () { overlay.remove(); });
-    function closeOnEsc(e) { if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', closeOnEsc); } }
+    function closeOverlay() {
+        overlay.remove();
+        document.removeEventListener('keydown', closeOnEsc);
+        removeTrap();
+        if (triggerEl && triggerEl.focus) triggerEl.focus();
+    }
+    overlay.addEventListener('click', closeOverlay);
+    function closeOnEsc(e) { if (e.key === 'Escape') closeOverlay(); }
     document.addEventListener('keydown', closeOnEsc);
 
     app.appendChild(overlay);
+    var removeTrap = SAB.toolbar._trapFocus(overlay);
 };
 
 /* ─── Help Overlay ─── */
@@ -235,9 +268,13 @@ SAB.toolbar.showHelp = function () {
     if (existing) { existing.remove(); return; }
 
     var isCamera = SAB.state.role === 'camera';
+    var triggerEl = document.activeElement;
 
     var overlay = document.createElement('div');
     overlay.className = H + '_help_overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'How to use Beamit');
 
     var steps = isCamera
         ? '<div class="' + H + '_help_steps">' +
@@ -257,18 +294,25 @@ SAB.toolbar.showHelp = function () {
 
     overlay.innerHTML =
         '<div class="' + H + '_help_card">' +
-          '<button class="' + H + '_help_close" title="Close">\u2715</button>' +
+          '<button class="' + H + '_help_close" title="Close" aria-label="Close help">\u2715</button>' +
           '<div class="' + H + '_help_title">How to use Beamit</div>' +
           steps +
         '</div>';
 
-    var closeOverlay = function () { overlay.remove(); document.removeEventListener('keydown', closeOnEsc); };
+    function closeOverlay() {
+        overlay.remove();
+        document.removeEventListener('keydown', closeOnEsc);
+        removeTrap();
+        if (triggerEl && triggerEl.focus) triggerEl.focus();
+    }
+
     overlay.querySelector('.' + H + '_help_close').addEventListener('click', closeOverlay);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });
     function closeOnEsc(e) { if (e.key === 'Escape') closeOverlay(); }
     document.addEventListener('keydown', closeOnEsc);
 
     app.appendChild(overlay);
+    var removeTrap = SAB.toolbar._trapFocus(overlay);
 };
 
 /* ─── Main Toolbar Binding ─── */

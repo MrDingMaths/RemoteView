@@ -19,14 +19,14 @@
                 <span id="show_mB4x_roomCodeSmall">&#8212;&#8212;</span>
             </div>
             <span class="show_mB4x_photo_count" id="show_mB4x_photoCount">0 / 8 photos</span>
-            <div class="show_mB4x_page_pills" id="show_mB4x_pagePills"></div>
+            <div class="show_mB4x_page_pills" id="show_mB4x_pagePills" role="group" aria-label="Pages"></div>
             <div class="show_mB4x_pill_sep"></div>
             <button class="show_mB4x_pill show_mB4x_pill_action" id="show_mB4x_loadPhotoBtn" title="Load photo from this device">&#128194; Load Photo</button>
             <button class="show_mB4x_pill show_mB4x_pill_action" id="show_mB4x_saveBtn" title="Save board as image">&#128190; Save</button>
             <button class="show_mB4x_pill show_mB4x_pill_hide_all" id="show_mB4x_hideAllBtn" title="Hide or show all photos (H)">&#128584; Hide All</button>
             <button class="show_mB4x_pill show_mB4x_pill_reset" id="show_mB4x_clearAllBtn" title="Clear everything">&#8634; Clear All</button>
             <div class="show_mB4x_pill_sep"></div>
-            <button class="show_mB4x_pill show_mB4x_pill_help" id="show_mB4x_helpBtn" title="How to use this board">&#9432;</button>
+            <button class="show_mB4x_pill show_mB4x_pill_help" id="show_mB4x_helpBtn" title="How to use this board" aria-label="Help">&#9432;</button>
         </div>
     </div>
     <div class="show_mB4x_main">
@@ -56,12 +56,12 @@
             </div>
             <div class="show_mB4x_photo_layer" id="show_mB4x_photoLayer"></div>
             <div class="show_mB4x_stamp_layer" id="show_mB4x_stampLayer"></div>
-            <canvas class="show_mB4x_draw_canvas" id="show_mB4x_drawCanvas"></canvas>
+            <canvas class="show_mB4x_draw_canvas" id="show_mB4x_drawCanvas" aria-label="Drawing canvas" role="img"></canvas>
             <div class="show_mB4x_text_layer" id="show_mB4x_textLayer"></div>
             <div class="show_mB4x_spotlight_overlay" id="show_mB4x_spotlightOverlay"></div>
             <div class="show_mB4x_lock_banner" id="show_mB4x_lockBanner">&#128274; Board locked</div>
             <div class="show_mB4x_vis_display_wrap show_mB4x_hidden" id="show_mB4x_visDisplayWrap">
-                <img class="show_mB4x_vis_display_img" id="show_mB4x_visDisplayImg" alt="">
+                <img class="show_mB4x_vis_display_img" id="show_mB4x_visDisplayImg" alt="Live visualiser feed">
             </div>
             <div class="show_mB4x_vis_display_bar show_mB4x_hidden" id="show_mB4x_visDisplayBar">
                 <span class="show_mB4x_vis_live_dot" id="show_mB4x_visLiveDot"></span>
@@ -71,97 +71,97 @@
                 <button class="show_mB4x_vis_bar_btn" id="show_mB4x_visDisplayRotateBtn" title="Rotate 90°">&#8635; Rotate</button>
                 <button class="show_mB4x_vis_bar_btn show_mB4x_vis_bar_end" id="show_mB4x_visDisplayEndBtn" title="End visualiser">&#9209; End</button>
             </div>
-            <div class="show_mB4x_toast" id="show_mB4x_toast"></div>
+            <div class="show_mB4x_toast" id="show_mB4x_toast" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
         <div class="show_mB4x_tools" id="show_mB4x_tools">
             <!-- Left column: General tools -->
             <div class="show_mB4x_tools_row">
-                <button class="show_mB4x_tool_btn" data-tool="arrow" title="Arrow">&#10140;</button>
-                <button class="show_mB4x_tool_btn" data-tool="text" title="Text label" style="font-weight:800">T</button>
+                <button class="show_mB4x_tool_btn" data-tool="arrow" title="Arrow" aria-label="Arrow tool">&#10140;</button>
+                <button class="show_mB4x_tool_btn" data-tool="text" title="Text label" aria-label="Text label tool" style="font-weight:800">T</button>
                 <div class="show_mB4x_tool_sep"></div>
-                <button class="show_mB4x_tool_btn show_mB4x_stamp_toggle" id="show_mB4x_stampToggle" title="Stamps">&#10003;&#10007;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_stamp_toggle" id="show_mB4x_stampToggle" title="Stamps" aria-label="Stamps" aria-expanded="false">&#10003;&#10007;</button>
                 <div class="show_mB4x_stamp_panel" id="show_mB4x_stampPanel">
-                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#10003;" title="Tick" style="color:#38a169;font-weight:800">&#10003;</button>
-                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#10007;" title="Cross" style="color:#e53e3e;font-weight:800">&#10007;</button>
-                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="?" title="Question" style="color:#2b6cb0;font-weight:800;font-size:1.1em">?</button>
-                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#9733;" title="Star" style="color:#d69e2e">&#9733;</button>
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#10003;" title="Tick" aria-label="Tick stamp" style="color:#38a169;font-weight:800">&#10003;</button>
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#10007;" title="Cross" aria-label="Cross stamp" style="color:#e53e3e;font-weight:800">&#10007;</button>
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="?" title="Question" aria-label="Question mark stamp" style="color:#2b6cb0;font-weight:800;font-size:1.1em">?</button>
+                    <button class="show_mB4x_tool_btn" data-tool="stamp" data-stamp="&#9733;" title="Star" aria-label="Star stamp" style="color:#d69e2e">&#9733;</button>
                 </div>
                 <div class="show_mB4x_tool_sep"></div>
-                <button class="show_mB4x_tool_btn show_mB4x_spotlight_btn" id="show_mB4x_spotlightBtn" title="Spotlight &#8212; toggle (S)">&#128294;</button>
-                <button class="show_mB4x_tool_btn show_mB4x_spotlight_size" id="show_mB4x_spotlightMinus" title="Smaller spotlight">&#8722;</button>
-                <button class="show_mB4x_tool_btn show_mB4x_spotlight_size" id="show_mB4x_spotlightPlus" title="Larger spotlight">+</button>
+                <button class="show_mB4x_tool_btn show_mB4x_spotlight_btn" id="show_mB4x_spotlightBtn" title="Spotlight &#8212; toggle (S)" aria-label="Spotlight toggle" aria-pressed="false">&#128294;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_spotlight_size" id="show_mB4x_spotlightMinus" title="Smaller spotlight" aria-label="Smaller spotlight">&#8722;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_spotlight_size" id="show_mB4x_spotlightPlus" title="Larger spotlight" aria-label="Larger spotlight">+</button>
                 <div class="show_mB4x_tool_sep"></div>
-                <button class="show_mB4x_tool_btn show_mB4x_lock_btn" id="show_mB4x_lockBtn" title="Lock board (L)">&#128274;</button>
-                <button class="show_mB4x_shortcut_hint" id="show_mB4x_shortcutHelpBtn" title="Keyboard shortcuts (?)">?</button>
+                <button class="show_mB4x_tool_btn show_mB4x_lock_btn" id="show_mB4x_lockBtn" title="Lock board (L)" aria-label="Lock board" aria-pressed="false">&#128274;</button>
+                <button class="show_mB4x_shortcut_hint" id="show_mB4x_shortcutHelpBtn" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
                 <div class="show_mB4x_tool_sep"></div>
-                <button class="show_mB4x_tool_btn show_mB4x_more_toggle" id="show_mB4x_moreToggle" title="Board backgrounds"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg></button>
+                <button class="show_mB4x_tool_btn show_mB4x_more_toggle" id="show_mB4x_moreToggle" title="Board backgrounds" aria-label="Board backgrounds" aria-expanded="false"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg></button>
                 <div class="show_mB4x_more_panel" id="show_mB4x_morePanel">
                     <div class="show_mB4x_tool_sep"></div>
                     <span class="show_mB4x_tool_label">Board</span>
-                    <button class="show_mB4x_bg_pill show_mB4x_tool_active" data-bg="white" title="Plain white"></button>
-                    <button class="show_mB4x_bg_pill" data-bg="grid" title="Squared grid"><span class="show_mB4x_bg_grid_icon"></span></button>
-                    <button class="show_mB4x_bg_pill" data-bg="dots" title="Dotted grid"><span class="show_mB4x_bg_dots_icon"></span></button>
-                    <button class="show_mB4x_bg_pill" data-bg="lined" title="Lined"><span class="show_mB4x_bg_lined_icon"></span></button>
+                    <button class="show_mB4x_bg_pill show_mB4x_tool_active" data-bg="white" title="Plain white" aria-label="Plain white background" aria-pressed="true"></button>
+                    <button class="show_mB4x_bg_pill" data-bg="grid" title="Squared grid" aria-label="Squared grid background" aria-pressed="false"><span class="show_mB4x_bg_grid_icon"></span></button>
+                    <button class="show_mB4x_bg_pill" data-bg="dots" title="Dotted grid" aria-label="Dotted grid background" aria-pressed="false"><span class="show_mB4x_bg_dots_icon"></span></button>
+                    <button class="show_mB4x_bg_pill" data-bg="lined" title="Lined" aria-label="Lined background" aria-pressed="false"><span class="show_mB4x_bg_lined_icon"></span></button>
                 </div>
             </div>
             <!-- Right column: Drawing tools -->
             <div class="show_mB4x_tools_row">
                 <span class="show_mB4x_tool_label">Pen</span>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-tool="pen" data-color="#2c3e50" title="Black pen (Q)"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
-                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#2b6cb0" title="Blue pen (W)"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
-                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#e53e3e" title="Red pen (R)"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
-                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#38a169" title="Green pen (G)"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-tool="pen" data-color="#2c3e50" title="Black pen (Q)" aria-label="Black pen" aria-pressed="true"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#2b6cb0" title="Blue pen (W)" aria-label="Blue pen" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#e53e3e" title="Red pen (R)" aria-label="Red pen" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="pen" data-color="#38a169" title="Green pen (G)" aria-label="Green pen" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
                 <div class="show_mB4x_tool_sep"></div>
                 <span class="show_mB4x_tool_label">Size</span>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-width="3" title="Thin"><span class="show_mB4x_pen_dot" style="background:#718096;width:6px;height:6px"></span></button>
-                <button class="show_mB4x_tool_btn" data-width="6" title="Medium"><span class="show_mB4x_pen_dot" style="background:#718096;width:10px;height:10px"></span></button>
-                <button class="show_mB4x_tool_btn" data-width="12" title="Thick"><span class="show_mB4x_pen_dot" style="background:#718096"></span></button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_active" data-width="3" title="Thin" aria-label="Thin pen size" aria-pressed="true"><span class="show_mB4x_pen_dot" style="background:#718096;width:6px;height:6px"></span></button>
+                <button class="show_mB4x_tool_btn" data-width="6" title="Medium" aria-label="Medium pen size" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#718096;width:10px;height:10px"></span></button>
+                <button class="show_mB4x_tool_btn" data-width="12" title="Thick" aria-label="Thick pen size" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#718096"></span></button>
                 <div class="show_mB4x_tool_sep"></div>
-                <button class="show_mB4x_tool_btn" data-tool="highlighter" title="Highlighter"><span class="show_mB4x_pen_dot" style="background:rgba(255,230,0,0.7)"></span></button>
-                <button class="show_mB4x_tool_btn" data-tool="eraser" title="Eraser (E)"><svg class="show_mB4x_eraser_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L12 20"/><path d="M6.5 13.5 14 6"/></svg></button>
+                <button class="show_mB4x_tool_btn" data-tool="highlighter" title="Highlighter" aria-label="Highlighter tool"><span class="show_mB4x_pen_dot" style="background:rgba(255,230,0,0.7)"></span></button>
+                <button class="show_mB4x_tool_btn" data-tool="eraser" title="Eraser (E)" aria-label="Eraser tool"><svg class="show_mB4x_eraser_icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L12 20"/><path d="M6.5 13.5 14 6"/></svg></button>
                 <div class="show_mB4x_tool_sep"></div>
                 <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_clearDrawBtn" title="Clear drawings only (Shift+C)">Clear Ink</button>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_undoBtn" title="Undo (Ctrl+Z)">&#8617;</button>
-                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_redoBtn" title="Redo (Ctrl+Shift+Z)">&#8618;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_undoBtn" title="Undo (Ctrl+Z)" aria-label="Undo">&#8617;</button>
+                <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_redoBtn" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">&#8618;</button>
             </div>
         </div>
         <div class="show_mB4x_phone_panel" id="show_mB4x_phonePanel">
             <div class="show_mB4x_phone_connect" id="show_mB4x_phoneConnect">
                 <div class="show_mB4x_phone_label">Connect to a display</div>
                 <div class="show_mB4x_phone_sublabel">Enter the code shown on the big screen</div>
-                <div><input type="text" class="show_mB4x_code_input" id="show_mB4x_codeInput" maxlength="6" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="Code" autocomplete="off" style="text-transform:uppercase"></div>
+                <div><input type="text" class="show_mB4x_code_input" id="show_mB4x_codeInput" maxlength="6" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="Code" autocomplete="off" aria-label="Room code" style="text-transform:uppercase"></div>
                 <button class="show_mB4x_connect_btn" id="show_mB4x_connectBtn">Connect</button>
-                <div class="show_mB4x_phone_error" id="show_mB4x_phoneError"></div>
+                <div class="show_mB4x_phone_error" id="show_mB4x_phoneError" role="alert" aria-live="assertive"></div>
                 <div class="show_mB4x_phone_divider">&#8212; or &#8212;</div>
                 <button class="show_mB4x_phone_display_btn" id="show_mB4x_switchToDisplay">&#128421;&#65039; Use this device as the display</button>
                 <div class="show_mB4x_phone_display_hint">Choose this if you only have one device, or are sharing this screen via AirPlay / casting</div>
             </div>
             <div class="show_mB4x_phone_connected" id="show_mB4x_phoneConnected">
                 <div class="show_mB4x_phone_status show_mB4x_status_ok" id="show_mB4x_phoneStatus"><span class="show_mB4x_status_dot show_mB4x_dot_on"></span> Connected</div>
-                <div class="show_mB4x_phone_page_bar show_mB4x_hidden" id="show_mB4x_phonePageBar">
-                    <button class="show_mB4x_phone_page_btn" id="show_mB4x_phonePagePrev">&#8249;</button>
-                    <span class="show_mB4x_phone_page_label" id="show_mB4x_phonePageLabel">Page 1 / 1</span>
-                    <button class="show_mB4x_phone_page_btn" id="show_mB4x_phonePageNext">&#8250;</button>
-                    <button class="show_mB4x_phone_page_btn show_mB4x_phone_page_add" id="show_mB4x_phonePageAdd">+</button>
+                <div class="show_mB4x_phone_page_bar show_mB4x_hidden" id="show_mB4x_phonePageBar" role="group" aria-label="Page navigation">
+                    <button class="show_mB4x_phone_page_btn" id="show_mB4x_phonePagePrev" aria-label="Previous page">&#8249;</button>
+                    <span class="show_mB4x_phone_page_label" id="show_mB4x_phonePageLabel" aria-live="polite">Page 1 / 1</span>
+                    <button class="show_mB4x_phone_page_btn" id="show_mB4x_phonePageNext" aria-label="Next page">&#8250;</button>
+                    <button class="show_mB4x_phone_page_btn show_mB4x_phone_page_add" id="show_mB4x_phonePageAdd" aria-label="Add page">+</button>
                 </div>
-                <div class="show_mB4x_phone_tabs" id="show_mB4x_phoneTabs">
-                    <button class="show_mB4x_phone_tab show_mB4x_phone_tab_active" data-tab="camera">&#128247; Camera</button>
-                    <button class="show_mB4x_phone_tab" data-tab="visualiser">&#128249; Visualiser</button>
-                    <button class="show_mB4x_phone_tab" data-tab="annotate">&#9999;&#65039; Annotate</button>
+                <div class="show_mB4x_phone_tabs" id="show_mB4x_phoneTabs" role="tablist" aria-label="Phone panels">
+                    <button class="show_mB4x_phone_tab show_mB4x_phone_tab_active" data-tab="camera" role="tab" aria-selected="true" aria-controls="show_mB4x_tabCamera">&#128247; Camera</button>
+                    <button class="show_mB4x_phone_tab" data-tab="visualiser" role="tab" aria-selected="false" aria-controls="show_mB4x_tabVisualiser">&#128249; Visualiser</button>
+                    <button class="show_mB4x_phone_tab" data-tab="annotate" role="tab" aria-selected="false" aria-controls="show_mB4x_tabAnnotate">&#9999;&#65039; Annotate</button>
                 </div>
                 <!-- Camera tab -->
-                <div class="show_mB4x_phone_tab_panel show_mB4x_visible" id="show_mB4x_tabCamera">
+                <div class="show_mB4x_phone_tab_panel show_mB4x_visible" id="show_mB4x_tabCamera" role="tabpanel" aria-label="Camera">
                     <button class="show_mB4x_cam_btn" id="show_mB4x_takePhotoBtn"><span class="show_mB4x_cam_icon">&#128247;</span><div class="show_mB4x_cam_text"><strong>Take Photo</strong><span>Use camera to capture student work</span></div></button>
                     <button class="show_mB4x_cam_btn" id="show_mB4x_choosePhotoBtn"><span class="show_mB4x_cam_icon">&#128444;&#65039;</span><div class="show_mB4x_cam_text"><strong>Choose Photo</strong><span>Select from photo library</span></div></button>
-                    <input type="file" accept="image/*" capture="environment" class="show_mB4x_cam_input" id="show_mB4x_camCapture">
-                    <input type="file" accept="image/*" class="show_mB4x_cam_input" id="show_mB4x_camLibrary">
-                    <div class="show_mB4x_phone_status show_mB4x_hidden" id="show_mB4x_sendingStatus"><span class="show_mB4x_spinner"></span> Sending photo&#8230;</div>
+                    <input type="file" accept="image/*" capture="environment" class="show_mB4x_cam_input" id="show_mB4x_camCapture" aria-label="Camera capture">
+                    <input type="file" accept="image/*" class="show_mB4x_cam_input" id="show_mB4x_camLibrary" aria-label="Photo library">
+                    <div class="show_mB4x_phone_status show_mB4x_hidden" id="show_mB4x_sendingStatus" role="status" aria-live="polite"><span class="show_mB4x_spinner"></span> Sending photo&#8230;</div>
                     <div class="show_mB4x_phone_sent" id="show_mB4x_sentThumbs"></div>
                 </div>
                 <!-- Visualiser tab -->
-                <div class="show_mB4x_phone_tab_panel" id="show_mB4x_tabVisualiser">
+                <div class="show_mB4x_phone_tab_panel" id="show_mB4x_tabVisualiser" role="tabpanel" aria-label="Visualiser">
                     <div class="show_mB4x_vis_preview_wrap">
-                        <video class="show_mB4x_vis_preview" id="show_mB4x_visPreview" playsinline muted autoplay></video>
+                        <video class="show_mB4x_vis_preview" id="show_mB4x_visPreview" playsinline muted autoplay aria-label="Visualiser camera preview"></video>
                         <div class="show_mB4x_vis_preview_placeholder" id="show_mB4x_visPlaceholder">
                             <div>&#128249;</div>
                             <div>Tap Start to begin live feed</div>
@@ -177,31 +177,31 @@
                         <button class="show_mB4x_vis_btn show_mB4x_vis_stop show_mB4x_hidden" id="show_mB4x_visStopBtn">&#9209; Stop</button>
                     </div>
                     <div class="show_mB4x_vis_hint">Students see this live on the display &#8212; great for modelling worked examples</div>
-                    <div class="show_mB4x_vis_status show_mB4x_hidden" id="show_mB4x_visStatus"></div>
+                    <div class="show_mB4x_vis_status show_mB4x_hidden" id="show_mB4x_visStatus" role="alert" aria-live="assertive"></div>
                 </div>
                 <!-- Annotate tab -->
-                <div class="show_mB4x_phone_tab_panel" id="show_mB4x_tabAnnotate">
+                <div class="show_mB4x_phone_tab_panel" id="show_mB4x_tabAnnotate" role="tabpanel" aria-label="Annotate">
                     <div class="show_mB4x_remote_canvas_wrap">
-                        <canvas class="show_mB4x_remote_canvas" id="show_mB4x_remoteCanvas"></canvas>
+                        <canvas class="show_mB4x_remote_canvas" id="show_mB4x_remoteCanvas" aria-label="Remote drawing canvas" role="img"></canvas>
                     </div>
                     <div class="show_mB4x_remote_tools">
                         <div class="show_mB4x_remote_tools_row">
-                            <button class="show_mB4x_tool_btn show_mB4x_rtool_active" data-rtool="pen" data-rcolor="#2c3e50"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
-                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#2b6cb0"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
-                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#e53e3e"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
-                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#38a169"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
+                            <button class="show_mB4x_tool_btn show_mB4x_rtool_active" data-rtool="pen" data-rcolor="#2c3e50" aria-label="Black pen" aria-pressed="true"><span class="show_mB4x_pen_dot" style="background:#2c3e50"></span></button>
+                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#2b6cb0" aria-label="Blue pen" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#2b6cb0"></span></button>
+                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#e53e3e" aria-label="Red pen" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#e53e3e"></span></button>
+                            <button class="show_mB4x_tool_btn" data-rtool="pen" data-rcolor="#38a169" aria-label="Green pen" aria-pressed="false"><span class="show_mB4x_pen_dot" style="background:#38a169"></span></button>
                             <div class="show_mB4x_tool_sep"></div>
-                            <button class="show_mB4x_tool_btn" data-rtool="eraser" title="Eraser"><svg class="show_mB4x_eraser_icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L12 20"/><path d="M6.5 13.5 14 6"/></svg></button>
-                            <button class="show_mB4x_tool_btn" data-rtool="arrow">&#10140;</button>
+                            <button class="show_mB4x_tool_btn" data-rtool="eraser" title="Eraser" aria-label="Eraser tool"><svg class="show_mB4x_eraser_icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L12 20"/><path d="M6.5 13.5 14 6"/></svg></button>
+                            <button class="show_mB4x_tool_btn" data-rtool="arrow" aria-label="Arrow tool">&#10140;</button>
                         </div>
                         <div class="show_mB4x_remote_tools_row">
-                            <button class="show_mB4x_tool_btn" data-rtool="stamp" data-rstamp="&#10003;" style="color:#38a169;font-weight:800">&#10003;</button>
-                            <button class="show_mB4x_tool_btn" data-rtool="stamp" data-rstamp="&#10007;" style="color:#e53e3e;font-weight:800">&#10007;</button>
+                            <button class="show_mB4x_tool_btn" data-rtool="stamp" data-rstamp="&#10003;" aria-label="Tick stamp" style="color:#38a169;font-weight:800">&#10003;</button>
+                            <button class="show_mB4x_tool_btn" data-rtool="stamp" data-rstamp="&#10007;" aria-label="Cross stamp" style="color:#e53e3e;font-weight:800">&#10007;</button>
                             <div class="show_mB4x_tool_sep"></div>
-                            <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteUndoBtn">&#8617;</button>
+                            <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteUndoBtn" aria-label="Undo">&#8617;</button>
                             <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteClearBtn">Clear</button>
                             <div class="show_mB4x_tool_sep"></div>
-                            <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteRefreshBtn" title="Refresh board view">&#128260;</button>
+                            <button class="show_mB4x_tool_btn show_mB4x_tool_action" id="show_mB4x_remoteRefreshBtn" title="Refresh board view" aria-label="Refresh board view">&#128260;</button>
                         </div>
                     </div>
                     <div class="show_mB4x_remote_hint">Draw here &#8212; appears live on the display</div>
@@ -210,7 +210,7 @@
             </div>
         </div>
     </div>
-    <input type="file" accept="image/*" id="show_mB4x_desktopFileInput" style="display:none" multiple>
+    <input type="file" accept="image/*" id="show_mB4x_desktopFileInput" style="display:none" multiple aria-label="Load photo from device">
 </div>
 
 <script src="js/qrcode.min.js"></script>
