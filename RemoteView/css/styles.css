@@ -25,7 +25,8 @@
 
 /* ═══ TOOLBAR ═══ */
 #show_mB4x_app .show_mB4x_toolbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: none; box-shadow: var(--beam-shadow-toolbar); flex-wrap: wrap; gap: 10px; background: var(--beam-white); position: relative; z-index: 1; }
-#show_mB4x_app .show_mB4x_title { font-size: 1.25em; font-weight: 800; color: #2c3e50; white-space: nowrap; letter-spacing: -0.02em; }
+#show_mB4x_app .show_mB4x_title { font-size: 1.25em; font-weight: 800; color: #2c3e50; white-space: nowrap; letter-spacing: -0.02em; display: flex; align-items: center; gap: 6px; }
+#show_mB4x_app .show_mB4x_logo { height: 1.6em; width: auto; display: block; }
 #show_mB4x_app .show_mB4x_title span { color: #718096; font-weight: 500; font-size: 0.7em; margin-left: 6px; }
 #show_mB4x_app .show_mB4x_toolbar_actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
